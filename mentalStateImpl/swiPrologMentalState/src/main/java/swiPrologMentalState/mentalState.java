@@ -43,6 +43,7 @@ public SwiPrologMentalState implements mentalState  {
 	 *            EIS parameter.
 	 * @return
 	 */
+	@Override
 	public static jpl.Term convert(eis.iilang.Parameter parameter) {
 		if (parameter instanceof Identifier) {
 			// do not do quoting of the term, that is only for printing.
@@ -94,6 +95,7 @@ public SwiPrologMentalState implements mentalState  {
 	 *            The JPL term.
 	 * @return An EIS parameter.
 	 */
+	@Override
 	public static eis.iilang.Parameter convert(jpl.Term term) {
 		if (term.isInteger()) {
 			return new eis.iilang.Numeral(((jpl.Integer) term).intValue());
