@@ -15,7 +15,7 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package goalKrTools;
+package sw;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
