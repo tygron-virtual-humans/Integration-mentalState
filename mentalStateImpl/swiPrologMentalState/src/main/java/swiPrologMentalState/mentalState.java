@@ -15,13 +15,11 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package sw;
+package swiPrologMentalState;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import krTools.KRInterface;
-import krTools.language.Term;
 import eis.iilang.Function;
 import eis.iilang.Identifier;
 import eis.iilang.Numeral;
@@ -34,7 +32,7 @@ import eis.iilang.TruthValue;
  * functionality.
  * 
  */
-public SwiPrologMentalState implements mentalState  {
+public class SwiPrologMentalState implements mentalState {
 
 	/**
 	 * DOC
@@ -142,6 +140,5 @@ public SwiPrologMentalState implements mentalState  {
 						+ term
 						+ " to EIS parameter but EIS conversion of this type of term is not supported.");
 	}
-
 
 }
