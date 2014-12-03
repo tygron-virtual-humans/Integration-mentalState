@@ -15,9 +15,8 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package goalKrTools;
+package mentalState;
 
-import krTools.KRInterface;
 import krTools.language.Term;
 import eis.iilang.Parameter;
 
