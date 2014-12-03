@@ -19,7 +19,11 @@ package swiPrologMentalState;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
+import jpl.Compound;
+import krTools.language.Term;
+import mentalState.mentalState;
 import eis.iilang.Function;
 import eis.iilang.Identifier;
 import eis.iilang.Numeral;
@@ -34,25 +38,18 @@ import eis.iilang.TruthValue;
  */
 public class SwiPrologMentalState implements mentalState {
 
-	/**
-	 * DOC
-	 * 
-	 * @param parameter
-	 *            EIS parameter.
-	 * @return
-	 */
 	@Override
-	public static jpl.Term convert(eis.iilang.Parameter parameter) {
+	public Term convert(Parameter parameter) {
 		if (parameter instanceof Identifier) {
 			// do not do quoting of the term, that is only for printing.
-			return new jpl.Atom(((Identifier) parameter).getValue());
+			return (Term) new jpl.Atom(((Identifier) parameter).getValue());
 		}
 		if (parameter instanceof Numeral) {
 			// check if parameter that is passed is a float.
 			// note that LONG numbers are converted to float
 			Number number = ((Numeral) parameter).getValue();
 			if (number instanceof Double || number instanceof Float) {
-				return new jpl.Float(number.doubleValue());
+				return (Term) new jpl.Float(number.doubleValue());
 			} else {
 				// int or long. Check if it fits
 				if (number instanceof Long
@@ -61,40 +58,39 @@ public class SwiPrologMentalState implements mentalState {
 					throw new ArithmeticException("EIS long value " + number
 							+ " does not fit into a JPL integer");
 				}
-				return new jpl.Integer(number.intValue());
+				return (Term) new jpl.Integer(number.intValue());
 			}
 		}
 		if (parameter instanceof Function) {
 			Function f = (Function) parameter;
 			ArrayList<jpl.Term> terms = new ArrayList<jpl.Term>();
 			for (Parameter p : f.getParameters()) {
-				terms.add(convert(p));
+				terms.add((jpl.Term) convert(p));
 			}
-			return new jpl.Compound(f.getName(), terms.toArray(new jpl.Term[0]));
+			return (Term) new jpl.Compound(f.getName(),
+					terms.toArray(new jpl.Term[0]));
 		}
 		if (parameter instanceof ParameterList) {
 			ArrayList<jpl.Term> terms = new ArrayList<jpl.Term>();
 			for (Parameter p : (ParameterList) parameter) {
-				terms.add(convert(p));
+				terms.add((jpl.Term) convert(p));
 			}
-			return termsToList(terms);
+			return (Term) termsToList(terms);
 		}
 		if (parameter instanceof TruthValue) {
-			return new jpl.Atom(((TruthValue) parameter).getValue());
+			return (Term) new jpl.Atom(((TruthValue) parameter).getValue());
 		}
 		throw new IllegalArgumentException("Failed to convert EIS parameter "
 				+ parameter + " to Prolog.");
 	}
 
-	/**
-	 * Converts a JPL term to an EIS parameter.
-	 * 
-	 * @param term
-	 *            The JPL term.
-	 * @return An EIS parameter.
-	 */
 	@Override
-	public static eis.iilang.Parameter convert(jpl.Term term) {
+	public Parameter convert(Term term1) {
+		if (!(term1 instanceof jpl.Term)) {
+			throw new IllegalArgumentException("term " + term1
+					+ " is not a jpl term");
+		}
+		jpl.Term term = (jpl.Term) term1;
 		if (term.isInteger()) {
 			return new eis.iilang.Numeral(((jpl.Integer) term).intValue());
 		}
@@ -122,14 +118,14 @@ public class SwiPrologMentalState implements mentalState {
 			// Check whether we're dealing with a list or other operator.
 			if (name.equals(".")) {
 				for (jpl.Term arg : getOperands(".", term)) {
-					parameters.add(convert(arg));
+					parameters.add(convert((Term) arg));
 				}
 				// Remove the empty list.
 				parameters.removeLast();
 				return new eis.iilang.ParameterList(parameters);
 			} else {
 				for (jpl.Term arg : term.args()) {
-					parameters.add(convert(arg));
+					parameters.add(convert((Term) arg));
 				}
 				return new eis.iilang.Function(name, parameters);
 			}
@@ -141,4 +137,55 @@ public class SwiPrologMentalState implements mentalState {
 						+ " to EIS parameter but EIS conversion of this type of term is not supported.");
 	}
 
+	/**
+	 * Returns the operands of a (repeatedly used) right associative binary
+	 * operator.
+	 * <p>
+	 * Can be used, for example, to get the conjuncts of a conjunction or the
+	 * elements of a list. Note that the <i>second</i> conjunct or element in a
+	 * list concatenation can be a conjunct or list itself again.
+	 * </p>
+	 * <p>
+	 * A list (term) of the form '.'(a,'.'(b,'.'(c, []))), for example, returns
+	 * the elements a, b, c, <i>and</i> the empty list []. A conjunction of the
+	 * form ','(e0,','(e1,','(e2...((...,en)))...) returns the list of conjuncts
+	 * e0, e1, e2, etc.
+	 * </p>
+	 * 
+	 * @param operator
+	 *            The binary operator.
+	 * @param term
+	 *            The term to be unraveled.
+	 * @return A list of operands.
+	 */
+	private static List<jpl.Term> getOperands(String operator, jpl.Term term) {
+		List<jpl.Term> list = new ArrayList<jpl.Term>();
+
+		if (term.isCompound() && term.name().equals(operator)
+				&& term.arity() == 2) {
+			list.add(term.arg(1));
+			list.addAll(getOperands(operator, term.arg(2)));
+		} else {
+			list.add(term);
+		}
+		return list;
+	}
+
+	/**
+	 * Returns a (possibly empty) Prolog list with the given terms as elements
+	 * of the list.
+	 * 
+	 * @param terms
+	 *            The elements to be included in the list.
+	 * @return A Prolog list using the "." and "[]" list constructors.
+	 */
+	private static jpl.Term termsToList(List<jpl.Term> terms) {
+		// Start with element in list, since innermost term of Prolog list is
+		// the last term.
+		jpl.Term list = new jpl.Atom("[]");
+		for (int i = terms.size() - 1; i >= 0; i--) {
+			list = new Compound(".", new jpl.Term[] { terms.get(i), list });
+		}
+		return list;
+	}
 }

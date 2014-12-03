@@ -87,6 +87,12 @@
 			<artifactId>eis</artifactId>
 			<version>0.4</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.github.goalhub.krTools.krLanguages</groupId>
+			<artifactId>swiprolog</artifactId>
+			<version>1.0.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>
