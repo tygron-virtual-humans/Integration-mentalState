@@ -10,7 +10,7 @@
 	<packaging>jar</packaging>
 
 	<name>Mental State Interface definition</name>
-	<url>https://github.com/goalhub/goalKrTools/tree/master/goalKrInterface</url>
+	<url>https://github.com/goalhub/mentalstate/tree/master</url>
 	<description>Provides an interface to access an agent's mental state in a generic way, independent of the specific language specification.</description>
 
 	<licenses>
@@ -33,7 +33,7 @@
 	</organization>
 
 	<issueManagement>
-		<url>https://github.com/goalhub/mentalState/issues</url>
+		<url>https://github.com/goalhub/mentalstate/issues</url>
 		<system>Github Issues</system>
 	</issueManagement>
 
