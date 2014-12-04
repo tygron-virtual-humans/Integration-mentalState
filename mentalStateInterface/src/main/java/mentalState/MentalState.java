@@ -25,7 +25,14 @@ import eis.iilang.Parameter;
  * functionality.
  * 
  */
-public interface mentalState {
+public interface MentalState {
+	/**
+	 * get name of interface
+	 * 
+	 * @return name of interface.
+	 */
+	String getName();
+
 	/**
 	 * Converts an {@link Parameter} parameter to a {@link Term}.
 	 * 

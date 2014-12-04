@@ -15,7 +15,7 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package goalhub.krTools;
+package mentalstatefactory;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -25,39 +25,42 @@ import krTools.KRInterface;
 import krTools.errors.exceptions.KRException;
 import krTools.errors.exceptions.KRInitFailedException;
 import krTools.errors.exceptions.KRInterfaceNotSupportedException;
+import mentalState.mentalState;
+import swiPrologMentalState.SwiPrologMentalState;
 
 /**
  * Factory of KR interfaces. Currently, the factory supports:
  * <ul>
- * 	<li>SWI Prolog v6.0.2</li>
+ * <li>SWI Prolog v6.0.2</li>
  * </ul>
  */
-public class KRFactory {
-	
-	/**
-	 * Static strings for names of supported KR Languages.
-	 */
-	public static String SWI_PROLOG;
+public class MentalStateFactory {
 
 	/**
-	 * A map of names to {@link KRInterface}s that are supported.
+	 * A map of names to {@link MentalSt}s that are supported.
 	 */
-	private static Map<String, KRInterface> languages = new Hashtable<String, KRInterface>();
+	private static Map<String, mentalState> mentalstateInterfaces = new Hashtable<String, mentalState>();
+
 	/**
-	 * The default interface that get be obtained by {@link KRFactory#getDefaultLanguage()}.
+	 * The default interface that get be obtained by
+	 * {@link MentalStateFactory#getDefaultLanguage()}.
 	 */
 	private static KRInterface defaultInterface;
 
 	// Initialize KR interfaces map and default language interface.
 	static {
+		addInterface(new SwiPrologMentalState());
+
 		// Add SWI Prolog and set as default.
 		try {
 			defaultInterface = swiprolog.SWIPrologInterface.getInstance();
-			KRFactory.addInterface(defaultInterface);
+			MentalStateFactory.addInterface(defaultInterface);
 			SWI_PROLOG = defaultInterface.getName();
 		} catch (KRInitFailedException e) {
 			// TODO
-			System.out.println("Failed to initialize the SWI Prolog interface because " + e.getMessage());
+			System.out
+					.println("Failed to initialize the SWI Prolog interface because "
+							+ e.getMessage());
 		} catch (KRException e) {
 			System.out.println(e.getMessage());
 		}
@@ -66,22 +69,29 @@ public class KRFactory {
 	/**
 	 * KRFactory is a utility class; constructor is hidden.
 	 */
-	private KRFactory() {
+	private MentalStateFactory() {
 	}
 
 	/**
-	 * Provides an interface for an available knowledge representation technology. Use
-	 * {@link KRFactory#getSupportedInterfaces()} to get names of supported interfaces.
+	 * Provides an interface for an available knowledge representation
+	 * technology. Use {@link MentalStateFactory#getSupportedInterfaces()} to
+	 * get names of supported interfaces.
 	 * 
-	 * @param name The name of the interface, e.g., "swiprolog".
-	 * @return A KR interface implementation for the knowledge representation technology.
-	 * @throws KRInterfaceNotSupportedException If interface is unknown.
+	 * @param name
+	 *            The name of the interface, e.g., "swiprolog".
+	 * @return A KR interface implementation for the knowledge representation
+	 *         technology.
+	 * @throws KRInterfaceNotSupportedException
+	 *             If interface is unknown.
 	 */
-	public static KRInterface getInterface(String name) throws KRInterfaceNotSupportedException {
-		KRInterface krInterface = languages.get(name.toLowerCase());
+	public static MentalStateFactory getInterface(String name)
+			throws KRInterfaceNotSupportedException {
+		MentalState mentalState = mentalstateInterfaces.get(name.toLowerCase());
 		if (krInterface == null) {
-			throw new KRInterfaceNotSupportedException("Could not find interface " + name
-					+ "; the following interfaces are available: " + languages.keySet());
+			throw new KRInterfaceNotSupportedException(
+					"Could not find interface " + name
+							+ "; the following interfaces are available: "
+							+ languages.keySet());
 		}
 		return krInterface;
 	}
@@ -89,20 +99,22 @@ public class KRFactory {
 	/**
 	 * Adds a KR interface to the list of supported language interfaces.
 	 * 
-	 * @param A KR interface.
-	 * @throws KRException If KR interface is already present, or no (valid) interface was provided.
+	 * @param A
+	 *            KR interface.
+	 * @throws KRException
+	 *             If KR interface is already present, or no (valid) interface
+	 *             was provided.
 	 */
-	public static void addInterface(KRInterface krInterface) throws KRException {
-		if (krInterface == null) {
-			throw new KRException(
-					"Cannot add null");
+	public static void addInterface(mentalState msInterface) throws KRException {
+		if (msInterface == null) {
+			throw new IllegalArgumentException("Cannot add null");
 		}
-		if (!languages.containsKey(krInterface.getName())) {
-			languages.put(krInterface.getName().toLowerCase(), krInterface);
-		} else {
-			throw new KRException("Interface " + krInterface.getName()
-					+ " already present");
+		if (mentalstateInterfaces.containsKey(mentalstateInterfaces.getName())) {
+			throw new IllegalStateException("Interface "
+					+ mentalstateInterfaces.getName() + " already present");
+
 		}
+		languages.put(krInterface.getName().toLowerCase(), krInterface);
 	}
 
 	/**
@@ -118,17 +130,20 @@ public class KRFactory {
 	 * @return The default KR interface.
 	 * @throw KRInitFailedException If no default interface is not available.
 	 */
-	public static KRInterface getDefaultInterface() throws KRInitFailedException {
+	public static KRInterface getDefaultInterface()
+			throws KRInitFailedException {
 		if (defaultInterface == null) {
-			throw new KRInitFailedException("Something went wrong; could not locate default interface.");
+			throw new KRInitFailedException(
+					"Something went wrong; could not locate default interface.");
 		}
 		return defaultInterface;
 	}
-	
+
 	/**
 	 * Sets the default KR interface.
 	 * 
-	 * @param krInterface The KR interface that should be used as default.
+	 * @param krInterface
+	 *            The KR interface that should be used as default.
 	 */
 	public static void setDefaultInterface(KRInterface krInterface) {
 		defaultInterface = krInterface;
