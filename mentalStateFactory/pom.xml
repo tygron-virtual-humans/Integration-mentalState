@@ -6,7 +6,7 @@
 
 	<groupId>com.github.goalhub.mentalstate</groupId>
 	<artifactId>mentalstatefactory</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>Mental State Factory</name>
@@ -73,7 +73,7 @@
 		<dependency>
 			<groupId>com.github.goalhub.mentalstate</groupId>
 			<artifactId>swiprologmentalstate</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.1</version>
 		</dependency>
 	</dependencies>
 
