@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+  	<groupId>com.github.goalhub</groupId>
+  	<artifactId>mentalstate</artifactId>
+  	<version>-</version>
+  </parent>
+
+  <groupId>com.github.goalhub.mentalstate</groupId>
+  <artifactId>mentalstateimpl</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+
+  <name>Mental State KR Support Implementations</name>
+  <url>https://github.com/goalhub/mentalState/tree/master/mentalStateImpl</url>
+  <description>Knowledge representation technologies that support the mental state.</description>
+
+  <licenses>
+  	<license>
+    	<name>The GNU General Public License, Version 3.0</name>
+    	<url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+  	</license>
+  </licenses>
+  
+  <developers>
+    <developer>
+      <name>Koen Hindriks</name>
+      <email>k.v.hindriks@gmail.com</email>
+      <organization>goalhub</organization>
+      <organizationUrl>https://github.com/koenhindriks</organizationUrl>
+    </developer>
+  </developers>
+  
+  <organization>
+  	<name>goalhub</name>
+  	<url>https://github.com/goalhub</url>
+  </organization>
+
+  <issueManagement>
+  	<url>https://github.com/goalhub/krTools/issues</url>
+  	<system>Github Issues</system>
+  </issueManagement>
+  
+  <scm>
+  	<connection>scm:git:git@github.com:goalhub/mentalState.git</connection>
+  	<developerConnection>scm:git:git@github.com:goalhub/mentalState.git</developerConnection>
+  	<url>https://github.com:goalhub/mentalState</url>
+  </scm>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
+  <modules>
+  	<module>swiPrologMentalState</module>
+  </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+</project>
