@@ -49,9 +49,9 @@
   </properties>
   
   <modules>
-    <module>mentalStateInterface</module>
-    <module>mentalStateFactory</module>
-    <module>mentalStateImpl</module>
+    <module>mentalstateinterface</module>
+    <module>mentalstatefactory</module>
+    <module>mentalstateimpl</module>
   </modules>
   
   <repositories>
