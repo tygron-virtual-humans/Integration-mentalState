@@ -23,7 +23,7 @@ import java.util.List;
 
 import jpl.Compound;
 import krTools.language.Term;
-import mentalState.mentalState;
+import mentalState.MentalState;
 import eis.iilang.Function;
 import eis.iilang.Identifier;
 import eis.iilang.Numeral;
@@ -36,7 +36,7 @@ import eis.iilang.TruthValue;
  * functionality.
  * 
  */
-public class SwiPrologMentalState implements mentalState {
+public class SwiPrologMentalState implements MentalState {
 
 	@Override
 	public Term convert(Parameter parameter) {
@@ -187,5 +187,10 @@ public class SwiPrologMentalState implements mentalState {
 			list = new Compound(".", new jpl.Term[] { terms.get(i), list });
 		}
 		return list;
+	}
+
+	@Override
+	public String getName() {
+		return "SwiPrologMentalState";
 	}
 }
