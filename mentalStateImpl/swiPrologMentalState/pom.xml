@@ -10,7 +10,7 @@
 	<packaging>jar</packaging>
 
 	<name>SWI Prolog implementation of MentalState</name>
-	<url>https://github.com/goalhub/mentalState/tree/master/goalKrInterface</url>
+	<url>https://github.com/goalhub/mentalState/tree/master</url>
 	<description>Provides an interface to access an agent's mental state in a generic way, independent of the specific language specification.</description>
 
 	<licenses>
@@ -38,8 +38,8 @@
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git:git@github.com:goalhub/mentalState.git</connection>
-		<developerConnection>scm:git:git@github.com:goalhub/mentalState.git</developerConnection>
+		<connection>scm:git:git@github.com:goalhub/mentalstate.git</connection>
+		<developerConnection>scm:git:git@github.com:goalhub/mentalstate.git</developerConnection>
 	</scm>
 
 	<properties>
