@@ -25,21 +25,20 @@ import krTools.KRInterface;
 import krTools.errors.exceptions.KRException;
 import krTools.errors.exceptions.KRInitFailedException;
 import krTools.errors.exceptions.KRInterfaceNotSupportedException;
-import mentalState.mentalState;
+import mentalState.MentalState;
 import swiPrologMentalState.SwiPrologMentalState;
 
 /**
- * Factory of KR interfaces. Currently, the factory supports:
- * <ul>
- * <li>SWI Prolog v6.0.2</li>
- * </ul>
+ * Factory of Mental State Interfaces.
+ * 
+ * @author W.Pasman 4dec14
  */
 public class MentalStateFactory {
 
 	/**
 	 * A map of names to {@link MentalSt}s that are supported.
 	 */
-	private static Map<String, mentalState> mentalstateInterfaces = new Hashtable<String, mentalState>();
+	private static Map<String, MentalState> mentalstateInterfaces = new Hashtable<String, MentalState>();
 
 	/**
 	 * The default interface that get be obtained by

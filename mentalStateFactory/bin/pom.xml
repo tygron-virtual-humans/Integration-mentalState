@@ -5,12 +5,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.goalhub.mentalstate</groupId>
-	<artifactId>mentalstateinterface</artifactId>
-	<version>1.2.0</version>
+	<artifactId>mentalstatefactory</artifactId>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
-	<name>Mental State Interface definition</name>
-	<url>https://github.com/goalhub/mentalstate/tree/master</url>
+	<name>Mental State Factory</name>
+	<url>https://github.com/goalhub/mentalState/tree/master/mentalStateFactory</url>
 	<description>Provides an interface to access an agent's mental state in a generic way, independent of the specific language specification.</description>
 
 	<licenses>
@@ -53,11 +53,6 @@
 			<url>https://raw.github.com/goalhub/mvn-repo/master</url>
 		</repository>
 
-		<repository>
-			<id>eishub-mvn-repo</id>
-			<url>https://raw.github.com/eishub/mvn-repo/master</url>
-		</repository>
-
 	</repositories>
 
 	<distributionManagement>
@@ -69,17 +64,16 @@
 	</distributionManagement>
 
 	<dependencies>
-
 		<dependency>
-			<groupId>com.github.goalhub.krTools</groupId>
-			<artifactId>krInterface</artifactId>
-			<version>1.0.2</version>
+			<groupId>com.github.goalhub.mentalstate</groupId>
+			<artifactId>mentalstate</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>
-			<groupId>eishub</groupId>
-			<artifactId>eis</artifactId>
-			<version>0.4</version>
+			<groupId>com.github.goalhub.mentalstate</groupId>
+			<artifactId>swiprologmentalstate</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
 
