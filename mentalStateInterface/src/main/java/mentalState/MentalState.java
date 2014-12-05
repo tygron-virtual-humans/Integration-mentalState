@@ -17,8 +17,23 @@
 
 package mentalState;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import krTools.database.Database;
+import krTools.errors.exceptions.KRInitFailedException;
+import krTools.language.DatabaseFormula;
+import krTools.language.Substitution;
 import krTools.language.Term;
+import krTools.language.Update;
+import languageTools.program.agent.AgentId;
+import languageTools.program.agent.actions.UserSpecAction;
+import languageTools.program.agent.msc.MentalStateCondition;
+import languageTools.program.agent.msg.Message;
+import eis.iilang.Action;
 import eis.iilang.Parameter;
+import eis.iilang.Percept;
 
 /**
  * The knowledge representation (KR) interface with GOAL specific extra
@@ -40,7 +55,7 @@ public interface MentalState {
 	 *            EIS parameter.
 	 * @return a GOAL {@link Term}
 	 */
-	public Term convert(Parameter parameter);
+	Term convert(Parameter parameter);
 
 	/**
 	 * Converts a {@link Term} to a {@link Parameter}.
@@ -49,7 +64,138 @@ public interface MentalState {
 	 *            The JPL term.
 	 * @return An EIS parameter.
 	 */
+	Parameter convert(Term term);
+	
+	/**
+	 * Creates a Term containing an (ordered) list of Terms.
+	 *
+	 * @param termList
+	 *            The list of Terms to convert to a single Term.
+	 *
+	 * @return A Term containing the given Terms as a list.
+	 */
+	Term makeList(List<Term> termList);
+	
+	/**
+	 * Converts a {@link UserSpecAction} to a {@link Action}.
+	 * 
+	 * @param term
+	 *            The UserSpecAction.
+	 * @return An EIS action.
+	 */
+	Action convert(UserSpecAction action);
 
-	public Parameter convert(Term term);
-
+	/**
+	 * Evaluates a {@link MentalStateCondition}.
+	 * @param condition
+	 * 			  The condition
+	 * @return A set of valid substitutions for the condition,
+	 * 	which is empty if the condition never applies.
+	 */
+	Set<Substitution> evaluate(MentalStateCondition condition);
+	
+	/**
+	 * Get a subset update, with either only mail updates or with all other
+	 * updates.
+	 *
+	 * @param update
+	 * 			  The update to filter.
+	 * @param selectMails
+	 *            {@code true} if you want only mail updates; {@code false} if
+	 *            you want all but mail updates. Mail updates are updates that
+	 *            have a 'sent/2' or 'received/2' main operator.
+	 * @return A {@link Update} with either only mail updates or all other
+	 *         updates.
+	 */
+	Update filterMailUpdates(Update update, boolean selectMails);
+	
+	/**
+	 * Creates new database using the content. It is the responsibility of the
+	 * KR technology to differentiate databases (e.g. by associating unique
+	 * identifiers with a database).
+	 *
+	 * @param type
+	 *            database type, i.e. belief base, goal base, mailbox, percept
+	 *            base.
+	 * @param content
+	 *            set of formulas to be inserted to database.
+	 * @param agent
+	 *            agent that requests the database. This name is used as
+	 *            database identifier, and should have a unique name for each
+	 *            new agent.
+	 *
+	 * @return The database that has been created.
+	 *
+	 * @throws KRInitFailedException
+	 */
+	Database makeDatabase(BASETYPE type, Collection<DatabaseFormula> content,
+			String agent) throws KRInitFailedException;
+	
+	/**
+	 * Performs a query on a database returning all receivers of the given
+	 * message according to the message base.
+	 *
+	 * @param database
+	 * 			  The database.
+	 * @param message
+	 *            The message.
+	 * @return The receivers of the given message.
+	 */
+	Collection<String> getReceiversOfMessage(Database database, Message message);
+	
+	/**
+	 * Inserts a sent or received fact for the given message into a database.
+	 *
+	 * @param database
+	 * 			  The database.
+	 * @param message
+	 *            The message that has been sent or received.
+	 * @param received
+	 *            {@code true} if the message has been received; {@code false}
+	 *            if it has been sent.
+	 * @return The set of database formulas that have been inserted into the
+	 *         database.
+	 */
+	Set<DatabaseFormula> insert(Database database, Message message, boolean received);
+	
+	/**
+	 * Inserts a percept into a database.
+	 *
+	 * @param database
+	 * 			  The database.
+	 * @param percept
+	 *            The EIS percept to be inserted.
+	 * @return The formula that was added to the percept base.
+	 */
+	DatabaseFormula insert(Database database, Percept percept);
+	
+	/**
+	 * Removes a percept from a database.
+	 *
+	 * @param database
+	 * 			  The database.
+	 * @param percept
+	 *            The EIS percept to be deleted.
+	 * @return The formula that was deleted from the percept base.
+	 */
+	DatabaseFormula delete(Database database, Percept percept);
+	
+	/**
+	 * Updates the 'agent(name)' fact for an agent in a database.
+	 *
+	 * @param database
+	 *            The database that needs to be updated.
+	 * @param insert
+	 *            {@code true} if the fact needs to be inserted; {@code false}
+	 *            if the fact needs to be removed;
+	 * @param id
+	 *            Id of the agent whose related agent fact needs to be updated.
+	 * @param me
+	 *            {@code true} if the related 'me(name)' fact also needs to be
+	 *            updated.
+	 * @return The facts that were inserted or removed.
+	 * @throws KRInitFailedException
+	 */
+	Set<DatabaseFormula> updateAgentFact(Database database, boolean insert, AgentId id, boolean me)
+			throws KRInitFailedException;
 }
