@@ -31,6 +31,7 @@ import java.util.Set;
 import jpl.Atom;
 import jpl.Compound;
 import jpl.Variable;
+import krTools.KRInterface;
 import krTools.database.Database;
 import krTools.errors.exceptions.KRDatabaseException;
 import krTools.errors.exceptions.KRInitFailedException;
@@ -56,6 +57,7 @@ import languageTools.program.agent.msg.Message;
 import languageTools.program.agent.rules.Rule;
 import mentalState.BASETYPE;
 import mentalState.MentalState;
+import swiprolog.SWIPrologInterface;
 import swiprolog.database.SWIPrologDatabase;
 import swiprolog.language.JPLUtils;
 import swiprolog.language.PrologDBFormula;
@@ -108,8 +110,8 @@ public class SwiPrologMentalState implements MentalState {
 	private Set<String> reserved = new LinkedHashSet<String>();
 	
 	@Override
-	public String getName() {
-		return "SwiPrologMentalState";
+	public Class<? extends KRInterface> getKRInterface() {
+		return SWIPrologInterface.class;
 	}
 
 	@Override

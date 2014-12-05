@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import krTools.KRInterface;
 import krTools.database.Database;
 import krTools.errors.exceptions.KRDatabaseException;
 import krTools.errors.exceptions.KRInitFailedException;
@@ -43,11 +44,11 @@ import eis.iilang.Percept;
  */
 public interface MentalState {
 	/**
-	 * get name of interface
+	 * get the corresponding KR interface
 	 * 
-	 * @return name of interface.
+	 * @return the KR interface class
 	 */
-	String getName();
+	Class<? extends KRInterface> getKRInterface();
 
 	/**
 	 * Converts an {@link Parameter} parameter to a {@link Term}.

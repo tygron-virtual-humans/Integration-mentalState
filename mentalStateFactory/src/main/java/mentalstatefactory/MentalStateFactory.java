@@ -22,6 +22,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import krTools.KRInterface;
 import krTools.errors.exceptions.KRException;
 import krTools.errors.exceptions.KRInitFailedException;
 import mentalState.MentalState;
@@ -37,7 +38,8 @@ public class MentalStateFactory {
 	/**
 	 * A map of names to {@link MentalSt}s that are supported.
 	 */
-	private static Map<String, MentalState> mentalstateInterfaces = new Hashtable<String, MentalState>();
+	private static Map<Class<? extends KRInterface>, MentalState> mentalstateInterfaces = 
+			new Hashtable<>();
 
 	/**
 	 * The default interface that get be obtained by
@@ -77,11 +79,11 @@ public class MentalStateFactory {
 	 * @throws UnknownObjectException
 	 *             If interface is unknown.
 	 */
-	public static MentalState getInterface(String name)
+	public static MentalState getInterface(Class<? extends KRInterface> kri)
 			throws UnknownObjectException {
-		MentalState msInterface = mentalstateInterfaces.get(name.toLowerCase());
+		MentalState msInterface = mentalstateInterfaces.get(kri);
 		if (msInterface == null) {
-			throw new UnknownObjectException("Could not find interface " + name
+			throw new UnknownObjectException("Could not find interface " + kri
 					+ "; the following interfaces are available: "
 					+ mentalstateInterfaces.keySet());
 		}
@@ -100,20 +102,18 @@ public class MentalStateFactory {
 	public static void addInterface(MentalState msInterface) {
 		if (msInterface == null) {
 			throw new IllegalArgumentException("Cannot add null");
-		}
-		if (mentalstateInterfaces.containsKey(msInterface.getName())) {
+		} else if (mentalstateInterfaces.containsKey(msInterface.getKRInterface())) {
 			throw new IllegalStateException("Interface "
-					+ msInterface.getName() + " already present");
-
+					+ msInterface.getKRInterface() + " already present");
+		} else {
+			mentalstateInterfaces.put(msInterface.getKRInterface(), msInterface);
 		}
-		mentalstateInterfaces.put(msInterface.getName().toLowerCase(),
-				msInterface);
 	}
 
 	/**
 	 * @return A set of names with supported KR interfaces.
 	 */
-	public static Set<String> getSupportedInterfaces() {
+	public static Set<Class<? extends KRInterface>> getSupportedInterfaces() {
 		return mentalstateInterfaces.keySet();
 	}
 
