@@ -6,7 +6,7 @@
 
 	<groupId>com.github.goalhub.mentalstate.mentalstateimpl</groupId>
 	<artifactId>swiprologmentalstate</artifactId>
-	<version>1.2.1</version>
+	<version>1.2.2</version>
 	<packaging>jar</packaging>
 
 	<name>SWI Prolog implementation of MentalState</name>
@@ -79,7 +79,7 @@
 		<dependency>
 			<groupId>com.github.goalhub.mentalstate</groupId>
 			<artifactId>mentalstateinterface</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.1</version>
 		</dependency>
 
 		<dependency>
@@ -91,7 +91,7 @@
 		<dependency>
 			<groupId>com.github.goalhub.krTools.krLanguages</groupId>
 			<artifactId>swiprolog</artifactId>
-			<version>1.0.4</version>
+			<version>1.0.5</version>
 		</dependency>
 	</dependencies>
 

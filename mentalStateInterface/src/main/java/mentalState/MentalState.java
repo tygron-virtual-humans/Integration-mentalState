@@ -22,14 +22,15 @@ import java.util.List;
 import java.util.Set;
 
 import krTools.database.Database;
+import krTools.errors.exceptions.KRDatabaseException;
 import krTools.errors.exceptions.KRInitFailedException;
+import krTools.errors.exceptions.KRQueryFailedException;
 import krTools.language.DatabaseFormula;
-import krTools.language.Substitution;
 import krTools.language.Term;
 import krTools.language.Update;
 import languageTools.program.agent.AgentId;
+import languageTools.program.agent.AgentProgram;
 import languageTools.program.agent.actions.UserSpecAction;
-import languageTools.program.agent.msc.MentalStateCondition;
 import languageTools.program.agent.msg.Message;
 import eis.iilang.Action;
 import eis.iilang.Parameter;
@@ -84,15 +85,6 @@ public interface MentalState {
 	 * @return An EIS action.
 	 */
 	Action convert(UserSpecAction action);
-
-	/**
-	 * Evaluates a {@link MentalStateCondition}.
-	 * @param condition
-	 * 			  The condition
-	 * @return A set of valid substitutions for the condition,
-	 * 	which is empty if the condition never applies.
-	 */
-	Set<Substitution> evaluate(MentalStateCondition condition);
 	
 	/**
 	 * Get a subset update, with either only mail updates or with all other
@@ -120,16 +112,17 @@ public interface MentalState {
 	 * @param content
 	 *            set of formulas to be inserted to database.
 	 * @param agent
-	 *            agent that requests the database. This name is used as
-	 *            database identifier, and should have a unique name for each
-	 *            new agent.
+	 *            the agent that requests the database; its name is used as
+	 *            the database identifier.
 	 *
 	 * @return The database that has been created.
 	 *
 	 * @throws KRInitFailedException
+	 * @throws KRDatabaseException
+	 * @throws KRQueryFailedException
 	 */
-	Database makeDatabase(BASETYPE type, Collection<DatabaseFormula> content,
-			String agent) throws KRInitFailedException;
+	Database makeDatabase(BASETYPE type, Collection<DatabaseFormula> content, AgentProgram agent) 
+			throws KRInitFailedException, KRDatabaseException, KRQueryFailedException;
 	
 	/**
 	 * Performs a query on a database returning all receivers of the given
@@ -140,8 +133,11 @@ public interface MentalState {
 	 * @param message
 	 *            The message.
 	 * @return The receivers of the given message.
+	 * 
+	 * @throws KRQueryFailedException
 	 */
-	Collection<String> getReceiversOfMessage(Database database, Message message);
+	Collection<String> getReceiversOfMessage(Database database, Message message)
+			throws KRQueryFailedException;
 	
 	/**
 	 * Inserts a sent or received fact for the given message into a database.
@@ -155,8 +151,11 @@ public interface MentalState {
 	 *            if it has been sent.
 	 * @return The set of database formulas that have been inserted into the
 	 *         database.
+	 * 
+	 * @throws KRDatabaseException
 	 */
-	Set<DatabaseFormula> insert(Database database, Message message, boolean received);
+	Set<DatabaseFormula> insert(Database database, Message message, boolean received)
+			throws KRDatabaseException;
 	
 	/**
 	 * Inserts a percept into a database.
@@ -166,8 +165,11 @@ public interface MentalState {
 	 * @param percept
 	 *            The EIS percept to be inserted.
 	 * @return The formula that was added to the percept base.
+	 * 
+	 * @throws KRDatabaseException
 	 */
-	DatabaseFormula insert(Database database, Percept percept);
+	DatabaseFormula insert(Database database, Percept percept)
+			throws KRDatabaseException;
 	
 	/**
 	 * Removes a percept from a database.
@@ -177,8 +179,11 @@ public interface MentalState {
 	 * @param percept
 	 *            The EIS percept to be deleted.
 	 * @return The formula that was deleted from the percept base.
+	 * 
+	 * @throws KRDatabaseException
 	 */
-	DatabaseFormula delete(Database database, Percept percept);
+	DatabaseFormula delete(Database database, Percept percept)
+			throws KRDatabaseException;
 	
 	/**
 	 * Updates the 'agent(name)' fact for an agent in a database.
@@ -194,8 +199,8 @@ public interface MentalState {
 	 *            {@code true} if the related 'me(name)' fact also needs to be
 	 *            updated.
 	 * @return The facts that were inserted or removed.
-	 * @throws KRInitFailedException
+	 * @throws KRDatabaseException
 	 */
 	Set<DatabaseFormula> updateAgentFact(Database database, boolean insert, AgentId id, boolean me)
-			throws KRInitFailedException;
+			throws KRDatabaseException;
 }
