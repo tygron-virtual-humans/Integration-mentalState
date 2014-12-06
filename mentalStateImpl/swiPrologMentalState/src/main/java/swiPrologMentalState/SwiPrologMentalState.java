@@ -1,16 +1,16 @@
 /**
  * Knowledge Representation Tools. Copyright (C) 2014 Koen Hindriks.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -87,28 +87,28 @@ public class SwiPrologMentalState implements MentalState {
 	 * that agent. An owner that has no associated databases should be removed
 	 * from the map.
 	 */
-	private Map<String, Set<TypedSWIPrologDatabase>> databases = new HashMap<>();
+	private final Map<String, Set<TypedSWIPrologDatabase>> databases = new HashMap<>();
 	/**
 	 * Stores content of knowledge base for later reference (when constructing a
 	 * belief or goal base). Every program has one set of knowledge. This
 	 * knowledge is collected by GOAL and inserted here into all databases. Key
 	 * is the name of the agent.
 	 */
-	private Map<String, Collection<DatabaseFormula>> knowledge = new HashMap<>();
+	private final Map<String, Collection<DatabaseFormula>> knowledge = new HashMap<>();
 	/**
 	 * The set of dynamic declarations that need to be made when a new belief is
 	 * inserted by an agent. Indexed by agent names and initialized by
 	 * initialize method.
 	 */
-	private Hashtable<String, Set<jpl.Term>> dynamicDeclarationsForBeliefBase = new Hashtable<>();
+	private final Hashtable<String, Set<jpl.Term>> dynamicDeclarationsForBeliefBase = new Hashtable<>();
 	/**
 	 * The set of dynamic declarations that need to be made when a new goal is
 	 * inserted by an agent. Indexed by agent names and initialized by
 	 * initialize method.
 	 */
-	private Hashtable<String, Set<jpl.Term>> dynamicDeclarationsForGoals = new Hashtable<>();
-	private Set<String> reserved = new LinkedHashSet<String>();
-	
+	private final Hashtable<String, Set<jpl.Term>> dynamicDeclarationsForGoals = new Hashtable<>();
+	private final Set<String> reserved = new LinkedHashSet<String>();
+
 	@Override
 	public Class<? extends KRInterface> getKRInterface() {
 		return SWIPrologInterface.class;
@@ -139,7 +139,7 @@ public class SwiPrologMentalState implements MentalState {
 			Function f = (Function) parameter;
 			List<Term> terms = new ArrayList<>(f.getParameters().size());
 			for (Parameter p : f.getParameters()) {
-				terms.add((Term) convert(p));
+				terms.add(convert(p));
 			}
 			return (Term) new Compound(f.getName(),
 					terms.toArray(new jpl.Term[0]));
@@ -153,8 +153,9 @@ public class SwiPrologMentalState implements MentalState {
 		} else if (parameter instanceof TruthValue) {
 			return (Term) new Atom(((TruthValue) parameter).getValue());
 		} else {
-			throw new IllegalArgumentException("Failed to convert EIS parameter "
-					+ parameter + " to Prolog.");
+			throw new IllegalArgumentException(
+					"Failed to convert EIS parameter " + parameter
+							+ " to Prolog.");
 		}
 	}
 
@@ -167,8 +168,7 @@ public class SwiPrologMentalState implements MentalState {
 		jpl.Term term = (jpl.Term) term1;
 		if (term.isInteger()) {
 			return new Numeral(((jpl.Integer) term).intValue());
-		}
-		else if (term.isFloat()) {
+		} else if (term.isFloat()) {
 			return new Numeral(((jpl.Float) term).floatValue());
 		}
 
@@ -208,7 +208,7 @@ public class SwiPrologMentalState implements MentalState {
 							+ " to EIS parameter but EIS conversion of this type of term is not supported.");
 		}
 	}
-	
+
 	@Override
 	public Term makeList(List<Term> termList) {
 		SourceInfo source = null;
@@ -219,9 +219,9 @@ public class SwiPrologMentalState implements MentalState {
 		for (Term t : termList) {
 			terms.add(((PrologTerm) t).getTerm());
 		}
-		return (Term)new PrologTerm(JPLUtils.termsToList(terms), source);
+		return new PrologTerm(JPLUtils.termsToList(terms), source);
 	}
-	
+
 	@Override
 	public Action convert(UserSpecAction action) {
 		LinkedList<Parameter> parameters = new LinkedList<>();
@@ -230,10 +230,10 @@ public class SwiPrologMentalState implements MentalState {
 		}
 		return new eis.iilang.Action(action.getName(), parameters);
 	}
-	
+
 	@Override
 	public Update filterMailUpdates(Update update, boolean selectMails) {
-		PrologUpdate update1 = (PrologUpdate)update;
+		PrologUpdate update1 = (PrologUpdate) update;
 		List<jpl.Term> conjuncts = JPLUtils.getOperands(",", update1.getTerm());
 		List<jpl.Term> newterm = new LinkedList<>();
 		for (jpl.Term term : conjuncts) {
@@ -244,12 +244,12 @@ public class SwiPrologMentalState implements MentalState {
 		return new PrologUpdate(JPLUtils.termsToConjunct(newterm),
 				update.getSourceInfo());
 	}
-	
+
 	/**
 	 * Checks if given term is a mail operator. If the head of the term is not,
 	 * we peek inside the not to determine. the two mail operators are "sent/2"
 	 * and "received/2".
-	 * 
+	 *
 	 * @param term
 	 * @return true if term is mail operator (possibly inside a not), else
 	 *         false.
@@ -261,16 +261,17 @@ public class SwiPrologMentalState implements MentalState {
 		}
 		return (signature.equals("sent/2") || signature.equals("received/2"));
 	}
-	
+
 	@Override
 	public Database makeDatabase(BASETYPE type,
 			Collection<DatabaseFormula> theory, AgentProgram agent)
-			throws KRInitFailedException, KRDatabaseException, KRQueryFailedException {
+					throws KRInitFailedException, KRDatabaseException,
+			KRQueryFailedException {
 		if (agent == null) {
 			throw new NullPointerException("agent=null");
 		}
 		final String name = agent.getSourceFile().getName();
-		if(!dynamicDeclarationsForBeliefBase.containsKey(name)){
+		if (!this.dynamicDeclarationsForBeliefBase.containsKey(name)) {
 			Set<jpl.Term> kbCalls = new LinkedHashSet<>();
 			Set<jpl.Term> dynDecl = new LinkedHashSet<>();
 			Set<jpl.Term> check = new LinkedHashSet<>();
@@ -279,23 +280,23 @@ public class SwiPrologMentalState implements MentalState {
 			// GOAL reserved predicates that should not be declared dynamic.
 			// Represent as strings as Term does not implement hashcode/equal
 			// methods...
-			reserved.add("/(percept,2)");
-			reserved.add("/(percept,1)");
-			reserved.add("/(received,2)");
-			reserved.add("/(sent,2)");
+			this.reserved.add("/(percept,2)");
+			this.reserved.add("/(percept,1)");
+			this.reserved.add("/(received,2)");
+			this.reserved.add("/(sent,2)");
 			// dynDecl.removeAll(reserved);
 
 			// ************ compute predicates for belief base **************/
 			/*
-			 * Add dynamic declarations to the belief base that do not occur in the
-			 * belief base or knowledge sections. The predicates that need to be
-			 * declared dynamically are those that occur in the adopt action, and
-			 * conditions in action rules (e.g. conditions of the form bel(...),
-			 * goal(...)), and those that occur in the precondition of action
-			 * specifications. Note that the dynamic declarations are
-			 * agent-specific. As the belief base is implemented by a single module
-			 * in SWI Prolog that is created at 'compile time' this initialization
-			 * has to be performed only once.
+			 * Add dynamic declarations to the belief base that do not occur in
+			 * the belief base or knowledge sections. The predicates that need
+			 * to be declared dynamically are those that occur in the adopt
+			 * action, and conditions in action rules (e.g. conditions of the
+			 * form bel(...), goal(...)), and those that occur in the
+			 * precondition of action specifications. Note that the dynamic
+			 * declarations are agent-specific. As the belief base is
+			 * implemented by a single module in SWI Prolog that is created at
+			 * 'compile time' this initialization has to be performed only once.
 			 */
 			// Add calls from bodies of clauses in the knowledge base
 			kbCalls = getCalls(agent.getAllKnowledge());
@@ -309,57 +310,65 @@ public class SwiPrologMentalState implements MentalState {
 			// Add predicates used in conditions from action rules on the belief
 			// base
 			dynDecl.addAll(getBBConditionDeclarationsFromProgram(agent));
-			// Add predicates used in a-goal or goal-a conditions from action rules
+			// Add predicates used in a-goal or goal-a conditions from action
+			// rules
 			dynDecl.addAll(getGoalConditionsFromProgram(agent));
-			// Add predicates that occur in preconditions of user-specified actions
+			// Add predicates that occur in preconditions of user-specified
+			// actions
 			dynDecl.addAll(getPreConditionDeclarations(agent
 					.getAllActionSpecs()));
-			// Add predicates that occur in the built-in actions adopt, adoptOne,
+			// Add predicates that occur in the built-in actions adopt,
+			// adoptOne,
 			// drop TODO and sendOnce
 			dynDecl.addAll(getDeclarationsFromProgram(agent));
 
-			// declared predicates in belief base are covered, and can be removed
+			// declared predicates in belief base are covered, and can be
+			// removed
 			bbDecl = getDeclarations(agent.getAllBeliefs());
 			// dynDecl.removeAll(bbDecl);
-			// declared predicates in knowledge base are covered, and can be removed
+			// declared predicates in knowledge base are covered, and can be
+			// removed
 			kbDecl = getDeclarations(agent.getAllKnowledge());
 			// dynDecl.removeAll(kbDecl);
 
 			// Store results for belief base
-			dynamicDeclarationsForBeliefBase.put(name, dynDecl);
+			this.dynamicDeclarationsForBeliefBase.put(name, dynDecl);
 
 			// check for name clashes
 			check.addAll(bbDecl);
 			check.retainAll(kbDecl);
 			if (!check.isEmpty()) {
-				throw new KRInitFailedException("For agent "
-						+ name
-						+ " the belief section defines "
-						+ check.toString().substring(1,
-								check.toString().length() - 1) + " which "
-						+ (check.size() == 1 ? "has" : "have")
-						+ " been defined in the knowledge section already.\n"
-						+ "The SWI Prolog modules used would produce name clashes.");
+				throw new KRInitFailedException(
+						"For agent "
+								+ name
+								+ " the belief section defines "
+								+ check.toString().substring(1,
+										check.toString().length() - 1)
+								+ " which "
+								+ (check.size() == 1 ? "has" : "have")
+								+ " been defined in the knowledge section already.\n"
+								+ "The SWI Prolog modules used would produce name clashes.");
 			}
 		}
-		if(!dynamicDeclarationsForGoals.containsKey(name)){
+		if (!this.dynamicDeclarationsForGoals.containsKey(name)) {
 			Set<jpl.Term> kbCalls = new LinkedHashSet<>();
 			Set<jpl.Term> dynDecl = new LinkedHashSet<>();
 			Set<jpl.Term> kbDecl;
 			// ************ compute predicates for goal base **************/
 			/*
-			 * Add dynamic declarations to the goal base that do not occur in the
-			 * goal base or knowledge sections in the program. The predicates that
-			 * need to be dynamically declared are those that occur in e.g. adopt
-			 * and drop actions (i.e. all built-in actions that modify the goal
-			 * base) and those that occur in goal-conditions in action rules (e.g.
-			 * conditions of the form goal(...)). Note that the dynamic declarations
-			 * are agent-specific. As for each goal that is adopted by the agent a
+			 * Add dynamic declarations to the goal base that do not occur in
+			 * the goal base or knowledge sections in the program. The
+			 * predicates that need to be dynamically declared are those that
+			 * occur in e.g. adopt and drop actions (i.e. all built-in actions
+			 * that modify the goal base) and those that occur in
+			 * goal-conditions in action rules (e.g. conditions of the form
+			 * goal(...)). Note that the dynamic declarations are
+			 * agent-specific. As for each goal that is adopted by the agent a
 			 * new SWI Prolog database (module) is created at runtime, this
-			 * initialization also needs to be performed at runtime when such a new
-			 * module is created. To support this, a hash table is introduced from
-			 * agent names to sets of predicates that need to be declared at
-			 * runtime.
+			 * initialization also needs to be performed at runtime when such a
+			 * new module is created. To support this, a hash table is
+			 * introduced from agent names to sets of predicates that need to be
+			 * declared at runtime.
 			 */
 			// Add calls from bodies of clauses in the knowledge base
 			kbCalls = getCalls(agent.getAllKnowledge());
@@ -367,7 +376,8 @@ public class SwiPrologMentalState implements MentalState {
 			dynDecl.addAll(kbCalls);
 			// Add calls from goal conditions that occur in action rules
 			dynDecl.addAll(getGoalConditionsFromProgram(agent));
-			// Add calls that result from built-in adopt, drop, and TODO adoptOne
+			// Add calls that result from built-in adopt, drop, and TODO
+			// adoptOne
 			// actions.
 			dynDecl.addAll(getDeclarationsFromProgram(agent));
 			/*
@@ -379,21 +389,21 @@ public class SwiPrologMentalState implements MentalState {
 				dynDecl.addAll(getDeclarations(goal.toUpdate().getAddList()));
 			}
 
-			// declared predicates in knowledge base are covered, and can be removed
+			// declared predicates in knowledge base are covered, and can be
+			// removed
 			kbDecl = this.getDeclarations(agent.getAllKnowledge());
 			dynDecl.removeAll(kbDecl);
 
 			// Store results for goal base
-			dynamicDeclarationsForGoals.put(name, dynDecl);
+			this.dynamicDeclarationsForGoals.put(name, dynDecl);
 		}
-		
-		
+
 		// Check whether an attempt is made to create multiple databases of the
 		// same type
 		// of database for name. This is only allowed for goal bases.
 		TypedSWIPrologDatabase found = null;
-		if (databases.containsKey(name)) {
-			for (TypedSWIPrologDatabase database : databases.get(name)) {
+		if (this.databases.containsKey(name)) {
+			for (TypedSWIPrologDatabase database : this.databases.get(name)) {
 				if (database.getType() == type) {
 					found = database;
 					break;
@@ -407,38 +417,40 @@ public class SwiPrologMentalState implements MentalState {
 		// TODO: HACKY way to do this... but we need access to the
 		// content of the knowledge base later somehow.
 		if (type.equals(BASETYPE.KNOWLEDGEBASE)) {
-			knowledge.put(name, theory);
+			this.knowledge.put(name, theory);
 		}
 
 		// Create new database of given type, content;
 		// use name as base name for name of database.
-		TypedSWIPrologDatabase database = new TypedSWIPrologDatabase(this, type, theory, name,
-				dynamicDeclarationsForBeliefBase.get(name),dynamicDeclarationsForGoals.get(name));
+		TypedSWIPrologDatabase database = new TypedSWIPrologDatabase(this,
+				type, theory, name,
+				this.dynamicDeclarationsForBeliefBase.get(name),
+				this.dynamicDeclarationsForGoals.get(name));
 		// Add database to list of databases maintained by SWI Prolog and
 		// associated with name.
-		if (databases.containsKey(name)) {
-			databases.get(name).add(database);
+		if (this.databases.containsKey(name)) {
+			this.databases.get(name).add(database);
 		} else {
 			// Initialize list of databases for name.
 			Set<TypedSWIPrologDatabase> databaselist = new HashSet<>();
 			databaselist.add(database);
-			databases.put(name, databaselist);
+			this.databases.put(name, databaselist);
 		}
 		// Return new database.
 		return database;
 	}
-	
+
 	/**
 	 * Internal use. Get the knowledge of some agent.
-	 * 
+	 *
 	 * @param agentname
 	 *            name of the agent owning the knowledge
 	 * @return set of {@link DatabaseFormula}s with the knowledge.
 	 */
 	public Collection<DatabaseFormula> getKnowledge(String agentname) {
-		return knowledge.get(agentname);
+		return this.knowledge.get(agentname);
 	}
-	
+
 	/**
 	 * Returns a database of a particular type associated with a given agent.
 	 * <p>
@@ -446,7 +458,7 @@ public class SwiPrologMentalState implements MentalState {
 	 * all other types of databases an agent can have multiple databases that
 	 * are used for storing goals.
 	 * </p>
-	 * 
+	 *
 	 * @param agent
 	 *            The name of an agent.
 	 * @param type
@@ -455,8 +467,8 @@ public class SwiPrologMentalState implements MentalState {
 	 *          {@code null} if no database of the given type exists.
 	 */
 	public TypedSWIPrologDatabase getDatabase(String agent, BASETYPE type) {
-		if (databases.containsKey(agent)) {
-			for (TypedSWIPrologDatabase database : databases.get(agent)) {
+		if (this.databases.containsKey(agent)) {
+			for (TypedSWIPrologDatabase database : this.databases.get(agent)) {
 				if (database.getType() == type) {
 					return database;
 				}
@@ -464,14 +476,14 @@ public class SwiPrologMentalState implements MentalState {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @author KH Jul08 DECLARATION HANDLING: code to extract info to perform
 	 *         right imports/exports and introduction of dynamic predicates for
 	 *         SWI-Prolog databases (modules). CHECK Also includes code to check
 	 *         that predicates introduced into knowledge base are never updated
 	 *         (asserted or retracted) in a given belief or goal base.
-	 * 
+	 *
 	 */
 	private Set<jpl.Term> getDeclarations(Iterable<DatabaseFormula> formulae) {
 		Set<jpl.Term> declarations = new LinkedHashSet<>();
@@ -489,7 +501,7 @@ public class SwiPrologMentalState implements MentalState {
 	 * (2) declaration names of all sub-terms, if term is conjunction<br>
 	 * (3) the term itself, if term is not built-in<br>
 	 * </p>
-	 * 
+	 *
 	 * @return signatures of functions occurring in the parts of the term.
 	 *         returns empty list if term is built-in prolog function.
 	 */
@@ -507,7 +519,8 @@ public class SwiPrologMentalState implements MentalState {
 			names.addAll(this.getDeclarationNames((((Compound) term).arg(1))));
 			names.addAll(this.getDeclarationNames((((Compound) term).arg(2))));
 		} else if (!PrologOperators.prologBuiltin(term.name())
-				&& !this.reserved.contains("/(" + term.name() + "," + arity + ")")) { // predicate
+				&& !this.reserved.contains("/(" + term.name() + "," + arity
+						+ ")")) { // predicate
 			names.add(JPLUtils.createCompound("/", new Atom(name),
 					new jpl.Integer(arity)));
 		}
@@ -518,7 +531,7 @@ public class SwiPrologMentalState implements MentalState {
 	 * Finds all the "calls" that are made inside a set of clauses. Here, a
 	 * functional view is taken on Prolog. It sees certain predicates such as :-
 	 * and forall as function definitions that can call other functions.
-	 * 
+	 *
 	 * @param formulae
 	 *            is a list of clauses and other DatabaseFormulas
 	 * @return set of all {@link #getCallNames} of the body of clauses (a clause
@@ -543,7 +556,7 @@ public class SwiPrologMentalState implements MentalState {
 	 * apparently ':-' inside a <em>clause</em> is considered a fucntion call
 	 * too.
 	 * </p>
-	 * 
+	 *
 	 * @return list of signatures of called functions
 	 */
 	private Set<jpl.Term> getCallNames(jpl.Term term) {
@@ -554,7 +567,7 @@ public class SwiPrologMentalState implements MentalState {
 		if (term == null) {
 			return names; // empty, typically an empty conjunct
 		}
-		
+
 		// Get name of main operator.
 		name = term.name();
 		arity = term.arity();
@@ -701,7 +714,7 @@ public class SwiPrologMentalState implements MentalState {
 			Iterable<ActionSpecification> actionSpecifications) {
 		Set<jpl.Term> names = new LinkedHashSet<>();
 		for (ActionSpecification rule : actionSpecifications) {
-			for(MentalFormula lit : rule.getPreCondition().getSubFormulas()){
+			for (MentalFormula lit : rule.getPreCondition().getSubFormulas()) {
 				names.addAll(getCallNames(((PrologQuery) lit).getTerm()));
 			}
 		}
@@ -711,11 +724,12 @@ public class SwiPrologMentalState implements MentalState {
 	@Override
 	public Collection<String> getReceiversOfMessage(Database database,
 			Message message) throws KRQueryFailedException {
-		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase)database;
+		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
 		Variable recipient = new Variable("Recipient");
 		jpl.Term msg = ((PrologDBFormula) message.getContent()).getTerm();
 		jpl.Term sent = JPLUtils.createCompound("sent", recipient, msg);
-		jpl.Term db_sent = JPLUtils.createCompound(":", swidb.getJPLName(), sent);
+		jpl.Term db_sent = JPLUtils.createCompound(":", swidb.getJPLName(),
+				sent);
 
 		Set<PrologSubstitution> results = SWIPrologDatabase.rawquery(db_sent);
 		Set<String> names = new LinkedHashSet<>();
@@ -732,7 +746,7 @@ public class SwiPrologMentalState implements MentalState {
 	@Override
 	public Set<DatabaseFormula> insert(Database database, Message message,
 			boolean received) throws KRDatabaseException {
-		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase)database;
+		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
 		jpl.Term msg = ((PrologDBFormula) message.getContent()).getTerm();
 		switch (message.getMood()) {
 		case IMPERATIVE:
@@ -765,9 +779,9 @@ public class SwiPrologMentalState implements MentalState {
 	}
 
 	@Override
-	public DatabaseFormula insert(Database database, Percept percept) 
+	public DatabaseFormula insert(Database database, Percept percept)
 			throws KRDatabaseException {
-		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase)database;
+		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
 		jpl.Term db_percept = JPLUtils.createCompound("percept",
 				perceptToTerm(percept));
 		swidb.insert(db_percept);
@@ -775,18 +789,18 @@ public class SwiPrologMentalState implements MentalState {
 	}
 
 	@Override
-	public DatabaseFormula delete(Database database, Percept percept) 
+	public DatabaseFormula delete(Database database, Percept percept)
 			throws KRDatabaseException {
-		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase)database;
+		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
 		jpl.Term db_percept = JPLUtils.createCompound("percept",
 				perceptToTerm(percept));
 		swidb.delete(db_percept);
 		return new PrologDBFormula(db_percept, null);
 	}
-	
+
 	/**
 	 * Translates an EIS percept into a JPL term.
-	 * 
+	 *
 	 * @param percept
 	 *            The EIS percept to be translated.
 	 * @return A JPL term translation of the percept.
@@ -802,7 +816,7 @@ public class SwiPrologMentalState implements MentalState {
 		} else {
 			List<jpl.Term> terms = new ArrayList<>(parameters.size());
 			for (Parameter parameter : parameters) {
-				terms.add((jpl.Term)convert(parameter));
+				terms.add((jpl.Term) convert(parameter));
 			}
 			term = new Compound(name, terms.toArray(new jpl.Term[0]));
 		}
@@ -811,12 +825,11 @@ public class SwiPrologMentalState implements MentalState {
 
 	@Override
 	public Set<DatabaseFormula> updateAgentFact(Database database,
-			boolean insert, AgentId id, boolean me)
-			throws KRDatabaseException {
-		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase)database;
+			boolean insert, AgentId id, boolean me) throws KRDatabaseException {
+		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
 		Set<DatabaseFormula> updates = new HashSet<>();
 		// Turn name into JPL term and create agent fact.
-		jpl.Term[] arg = { (jpl.Term)convert(new Identifier(id.getName())) };
+		jpl.Term[] arg = { (jpl.Term) convert(new Identifier(id.getName())) };
 		jpl.Term term = JPLUtils.createCompound("agent", arg);
 		// Insert or delete agent fact.
 		if (insert) {

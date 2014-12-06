@@ -1,16 +1,16 @@
 /**
  * Knowledge Representation Tools. Copyright (C) 2014 Koen Hindriks.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -30,7 +30,7 @@ import swiPrologMentalState.SwiPrologMentalState;
 
 /**
  * Factory of Mental State Interfaces.
- * 
+ *
  * @author W.Pasman 4dec14
  */
 public class MentalStateFactory {
@@ -38,8 +38,7 @@ public class MentalStateFactory {
 	/**
 	 * A map of names to {@link MentalSt}s that are supported.
 	 */
-	private static Map<Class<? extends KRInterface>, MentalState> mentalstateInterfaces = 
-			new Hashtable<>();
+	private static Map<Class<? extends KRInterface>, MentalState> mentalstateInterfaces = new Hashtable<>();
 
 	/**
 	 * The default interface that get be obtained by
@@ -56,8 +55,8 @@ public class MentalStateFactory {
 			MentalStateFactory.addInterface(defaultInterface);
 		} catch (IllegalStateException e) {
 			System.out
-					.println("Failed to initialize the SWI Prolog MentalState interface because "
-							+ e.getMessage());
+			.println("Failed to initialize the SWI Prolog MentalState interface because "
+					+ e.getMessage());
 		}
 	}
 
@@ -71,7 +70,7 @@ public class MentalStateFactory {
 	 * Provides an interface for an available knowledge representation
 	 * technology. Use {@link MentalStateFactory#getSupportedInterfaces()} to
 	 * get names of supported interfaces.
-	 * 
+	 *
 	 * @param name
 	 *            The name of the interface, eg "SwiPrologMentalState".
 	 * @return A {@link MentalState} implementation for the given language
@@ -92,7 +91,7 @@ public class MentalStateFactory {
 
 	/**
 	 * Adds a KR interface to the list of supported language interfaces.
-	 * 
+	 *
 	 * @param A
 	 *            KR interface.
 	 * @throws KRException
@@ -102,11 +101,13 @@ public class MentalStateFactory {
 	public static void addInterface(MentalState msInterface) {
 		if (msInterface == null) {
 			throw new IllegalArgumentException("Cannot add null");
-		} else if (mentalstateInterfaces.containsKey(msInterface.getKRInterface())) {
+		} else if (mentalstateInterfaces.containsKey(msInterface
+				.getKRInterface())) {
 			throw new IllegalStateException("Interface "
 					+ msInterface.getKRInterface() + " already present");
 		} else {
-			mentalstateInterfaces.put(msInterface.getKRInterface(), msInterface);
+			mentalstateInterfaces
+					.put(msInterface.getKRInterface(), msInterface);
 		}
 	}
 
@@ -119,7 +120,7 @@ public class MentalStateFactory {
 
 	/**
 	 * Returns the default KR interface.
-	 * 
+	 *
 	 * @return The default KR interface.
 	 * @throw {@link IllegalStateException} If no default interface is not
 	 *        available.

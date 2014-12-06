@@ -11,10 +11,8 @@ import krTools.errors.exceptions.KRInitFailedException;
 import krTools.errors.exceptions.KRQueryFailedException;
 import krTools.language.DatabaseFormula;
 import mentalState.BASETYPE;
-import swiprolog.SWIPrologInterface;
 import swiprolog.database.SWIPrologDatabase;
 import swiprolog.language.JPLUtils;
-import swiprolog.language.PrologDBFormula;
 
 public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 	private final SwiPrologMentalState state;
@@ -26,7 +24,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 	 * Type of the database, e.g., belief, knowledge, ... base.
 	 */
 	private final BASETYPE type;
-	
+
 	/**
 	 * @param databaseType
 	 *            the database type to be made
@@ -36,13 +34,14 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 	 *            the name of base (unique name)
 	 * @throws KRInitFailedException
 	 *             If database creation failed.
-	 * @throws KRDatabaseException 
-	 * @throws KRQueryFailedException 
+	 * @throws KRDatabaseException
+	 * @throws KRQueryFailedException
 	 */
-	public TypedSWIPrologDatabase(SwiPrologMentalState state, BASETYPE databaseType,
-			Collection<DatabaseFormula> content, String name,
-			Set<Term> dynamicBeliefs, Set<Term> dynamicGoals)
-			throws KRInitFailedException, KRDatabaseException, KRQueryFailedException {
+	public TypedSWIPrologDatabase(SwiPrologMentalState state,
+			BASETYPE databaseType, Collection<DatabaseFormula> content,
+			String name, Set<Term> dynamicBeliefs, Set<Term> dynamicGoals)
+					throws KRInitFailedException, KRDatabaseException,
+			KRQueryFailedException {
 		super(content);
 		// Used for initialization purposes; enables to keep track of related
 		// databases that make up the mental state of an agent.
@@ -50,7 +49,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 		this.type = databaseType;
 		this.state = state;
 
-		if (!type.equals(BASETYPE.KNOWLEDGEBASE)) {
+		if (!this.type.equals(BASETYPE.KNOWLEDGEBASE)) {
 			// Create SWI Prolog module that will act as our database.
 			// synchronized(this) {
 			rawquery(JPLUtils.createCompound(":", getJPLName(),
@@ -111,8 +110,8 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			add(getKnowledgeBaseContent());
 			break;
 		case MAILBOX:
-			Term received = JPLUtils.createCompound("received",
-					anonymousVar, anonymousVar);
+			Term received = JPLUtils.createCompound("received", anonymousVar,
+					anonymousVar);
 			Term db_received = JPLUtils.createCompound(":", getJPLName(),
 					received);
 			Term export_received = JPLUtils.createCompound("export",
@@ -123,13 +122,12 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			Term export_sent = JPLUtils.createCompound("export", db_sent);
 
 			try {
-				rawquery(JPLUtils.createCompound("dynamic",
-						db_received));
+				rawquery(JPLUtils.createCompound("dynamic", db_received));
 				rawquery(JPLUtils.createCompound("dynamic", db_sent));
 				rawquery(JPLUtils.createCompound(":", getJPLName(),
 						export_received));
-				rawquery(JPLUtils.createCompound(":", getJPLName(),
-						export_sent));
+				rawquery(JPLUtils
+						.createCompound(":", getJPLName(), export_sent));
 			} catch (Exception e) {
 				throw new KRInitFailedException("Initialization of the mail"
 						+ "box of agent " + this.owner + "failed: "
@@ -144,31 +142,29 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			Term percept = JPLUtils.createCompound("percept", anonymousVar);
 			Term db_percept = JPLUtils.createCompound(":", getJPLName(),
 					percept);
-			Term export_percept = JPLUtils.createCompound("export",
-					db_percept);
-			Term percept2 = JPLUtils.createCompound("percept",
-					anonymousVar, anonymousVar);
+			Term export_percept = JPLUtils.createCompound("export", db_percept);
+			Term percept2 = JPLUtils.createCompound("percept", anonymousVar,
+					anonymousVar);
 			Term db_percept2 = JPLUtils.createCompound(":", getJPLName(),
 					percept2);
 			Term export_percept2 = JPLUtils.createCompound("export",
 					db_percept2);
 
 			rawquery(JPLUtils.createCompound("dynamic", db_percept));
-			rawquery(JPLUtils.createCompound(":", getJPLName(),
-					export_percept));
+			rawquery(JPLUtils.createCompound(":", getJPLName(), export_percept));
 			rawquery(JPLUtils.createCompound("dynamic", db_percept2));
-			rawquery(JPLUtils.createCompound(":", getJPLName(),
-					export_percept2));
+			rawquery(JPLUtils
+					.createCompound(":", getJPLName(), export_percept2));
 			// Ignore initial content; percept base is empty initially.
 			// Import percept predicate into belief base, if it exists.
 			importPerceptsIntoBB();
 			break;
 		}
 	}
-	
+
 	/**
 	 * Returns the name of the agent owner of this database.
-	 * 
+	 *
 	 * @return The name of the agent that owns this database.
 	 */
 	public String getOwner() {
@@ -183,18 +179,19 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 	 * @return the {@link BASETYPE} of this database.
 	 */
 	public BASETYPE getType() {
-		return type;
+		return this.type;
 	}
-	
+
 	/**
 	 * Get knowledge base content (should be done for belief and goal bases).
-	 * 
+	 *
 	 * @throws KRInitFailedException
 	 *             If knowledge base has not been created yet.
 	 */
 	private Collection<DatabaseFormula> getKnowledgeBaseContent()
 			throws KRInitFailedException {
-		Collection<DatabaseFormula> knowledge = state.getKnowledge(owner);
+		Collection<DatabaseFormula> knowledge = this.state
+				.getKnowledge(this.owner);
 		// A knowledge base must already have been created; get its content.
 		if (knowledge == null) {
 			throw new KRInitFailedException("Attempt to create belief or goal "
@@ -205,16 +202,18 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 
 	/**
 	 * DOC
-	 * 
+	 *
 	 * @throws KRInitFailedException
-	 * @throws KRQueryFailedException 
+	 * @throws KRQueryFailedException
 	 */
-	private void importPerceptsIntoBB() throws KRInitFailedException, KRQueryFailedException {
+	private void importPerceptsIntoBB() throws KRInitFailedException,
+			KRQueryFailedException {
 		SWIPrologDatabase beliefbase, perceptbase;
-		switch (type) {
+		switch (this.type) {
 		case BELIEFBASE:
 			beliefbase = this;
-			perceptbase = state.getDatabase(owner, BASETYPE.PERCEPTBASE);
+			perceptbase = this.state.getDatabase(this.owner,
+					BASETYPE.PERCEPTBASE);
 			// If percept base does not yet exist, then nothing to do; return.
 			if (perceptbase == null) {
 				return;
@@ -222,7 +221,8 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			break;
 		case PERCEPTBASE:
 			perceptbase = this;
-			beliefbase = state.getDatabase(owner, BASETYPE.BELIEFBASE);
+			beliefbase = this.state
+					.getDatabase(this.owner, BASETYPE.BELIEFBASE);
 			// If belief base does not yet exist, then nothing to do; return.
 			if (beliefbase == null) {
 				return;
@@ -230,7 +230,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			break;
 		default:
 			throw new UnsupportedOperationException(
-					"Cannot import percepts from " + type);
+					"Cannot import percepts from " + this.type);
 		}
 
 		// Create an anonymous variable.
@@ -247,8 +247,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 		Term percept1 = JPLUtils.createCompound("percept", anonymousVar);
 		Term pb_percept1 = JPLUtils.createCompound(":",
 				perceptbase.getJPLName(), percept1);
-		Term import_percept1 = JPLUtils.createCompound("import",
-				pb_percept1);
+		Term import_percept1 = JPLUtils.createCompound("import", pb_percept1);
 		Term bb_import_percept1 = JPLUtils.createCompound(":",
 				beliefbase.getJPLName(), import_percept1);
 
@@ -260,16 +259,17 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 
 	/**
 	 * DOC
-	 * 
+	 *
 	 * @throws KRInitFailedException
-	 * @throws KRQueryFailedException 
+	 * @throws KRQueryFailedException
 	 */
-	private void importMailsInBB() throws KRInitFailedException, KRQueryFailedException {
+	private void importMailsInBB() throws KRInitFailedException,
+			KRQueryFailedException {
 		SWIPrologDatabase beliefbase, mailbox;
-		switch (type) {
+		switch (this.type) {
 		case BELIEFBASE:
 			beliefbase = this;
-			mailbox = state.getDatabase(owner, BASETYPE.MAILBOX);
+			mailbox = this.state.getDatabase(this.owner, BASETYPE.MAILBOX);
 			// If mail box does not yet exist, then nothing to do; return.
 			if (mailbox == null) {
 				return;
@@ -277,7 +277,8 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			break;
 		case MAILBOX:
 			mailbox = this;
-			beliefbase = state.getDatabase(owner, BASETYPE.BELIEFBASE);
+			beliefbase = this.state
+					.getDatabase(this.owner, BASETYPE.BELIEFBASE);
 			// If belief base does not yet exist, then nothing to do; return.
 			if (beliefbase == null) {
 				return;
@@ -285,7 +286,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			break;
 		default:
 			throw new UnsupportedOperationException(
-					"Cannot import messages from " + type);
+					"Cannot import messages from " + this.type);
 		}
 		// Create an anonymous variable.
 		Variable anonymousVar = new Variable("_");
@@ -299,10 +300,9 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 		Term bb_import_received = JPLUtils.createCompound(":",
 				beliefbase.getJPLName(), import_received);
 
-		Term sent = JPLUtils.createCompound("sent", anonymousVar,
-				anonymousVar);
-		Term mailbox_sent = JPLUtils.createCompound(":",
-				mailbox.getJPLName(), sent);
+		Term sent = JPLUtils.createCompound("sent", anonymousVar, anonymousVar);
+		Term mailbox_sent = JPLUtils.createCompound(":", mailbox.getJPLName(),
+				sent);
 		Term import_sent = JPLUtils.createCompound("import", mailbox_sent);
 		Term bb_import_sent = JPLUtils.createCompound(":",
 				beliefbase.getJPLName(), import_sent);
@@ -310,30 +310,32 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 		// Import received and sent predicate into belief base.
 		rawquery(JPLUtils.createCompound(",", new Atom("true"),
 				bb_import_received));
-		rawquery(JPLUtils.createCompound(",", new Atom("true"),
-				bb_import_sent));
+		rawquery(JPLUtils.createCompound(",", new Atom("true"), bb_import_sent));
 	}
-	
+
 	/**
 	 * Adds all content, i.e. the set of {@link DatabaseFormula}, to the
 	 * database.
-	 * @throws KRDatabaseException 
+	 * 
+	 * @throws KRDatabaseException
 	 */
-	private void add(Collection<DatabaseFormula> content) throws KRDatabaseException {
+	private void add(Collection<DatabaseFormula> content)
+			throws KRDatabaseException {
 		for (DatabaseFormula formula : content) {
-			insert(((PrologDBFormula) formula));
+			insert((formula));
 		}
 	}
-	
+
 	/**
 	 * Declares predicates as dynamic predicates in the database so they can be
 	 * queried without introducing existence errors.
-	 * @throws KRQueryFailedException 
+	 * 
+	 * @throws KRQueryFailedException
 	 */
-	private void declareDynamic(Set<Term> dynamicDeclarations) throws KRQueryFailedException {
+	private void declareDynamic(Set<Term> dynamicDeclarations)
+			throws KRQueryFailedException {
 		for (Term term : dynamicDeclarations) {
-			Term declaration = JPLUtils
-					.createCompound(":", getJPLName(), term);
+			Term declaration = JPLUtils.createCompound(":", getJPLName(), term);
 			rawquery(JPLUtils.createCompound("dynamic", declaration));
 		}
 	}

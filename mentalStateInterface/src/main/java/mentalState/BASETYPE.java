@@ -32,8 +32,9 @@ public enum BASETYPE {
 	/**
 	 * A knowledge base. Note that GOAL does not explicitly store the knowledge
 	 * base of an agent, but only a list of formulae in the KB, present in the
-	 * agent's AgentProgram. This value is mostly there so that the DatabasePanel
-	 * can identify that it contains information of the knowledge base.
+	 * agent's AgentProgram. This value is mostly there so that the
+	 * DatabasePanel can identify that it contains information of the knowledge
+	 * base.
 	 */
 	KNOWLEDGEBASE("knowledge base"),
 	/**
