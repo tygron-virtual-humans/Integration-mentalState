@@ -6,7 +6,7 @@
 
 	<groupId>com.github.goalhub.mentalstate</groupId>
 	<artifactId>mentalstateinterface</artifactId>
-	<version>1.2.1</version>
+	<version>1.2.2</version>
 	<packaging>jar</packaging>
 
 	<name>Mental State Interface definition</name>
@@ -68,18 +68,11 @@
 		</repository>
 	</distributionManagement>
 
-	<dependencies>
-
-		<dependency>
-			<groupId>com.github.goalhub.krTools</groupId>
-			<artifactId>krInterface</artifactId>
-			<version>1.0.2</version>
-		</dependency>
-		
+	<dependencies>		
 		<dependency>
 			<groupId>com.github.goalhub.grammar</groupId>
 			<artifactId>languageTools</artifactId>
-			<version>1.0.5</version>
+			<version>1.0.6</version>
 		</dependency>
 
 		<dependency>

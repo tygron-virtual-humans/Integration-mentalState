@@ -81,18 +81,6 @@
 			<artifactId>mentalstateinterface</artifactId>
 			<version>1.2.1</version>
 		</dependency>
-
-		<dependency>
-			<groupId>eishub</groupId>
-			<artifactId>eis</artifactId>
-			<version>0.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.github.goalhub.krTools.krLanguages</groupId>
-			<artifactId>swiprolog</artifactId>
-			<version>1.0.5</version>
-		</dependency>
 	</dependencies>
 
 	<build>
