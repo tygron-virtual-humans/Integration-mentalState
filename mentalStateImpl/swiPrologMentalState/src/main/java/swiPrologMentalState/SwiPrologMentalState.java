@@ -265,7 +265,7 @@ public class SwiPrologMentalState implements MentalState {
 	@Override
 	public Database makeDatabase(BASETYPE type,
 			Collection<DatabaseFormula> theory, AgentProgram agent)
-					throws KRInitFailedException, KRDatabaseException,
+			throws KRInitFailedException, KRDatabaseException,
 			KRQueryFailedException {
 		if (agent == null) {
 			throw new NullPointerException("agent=null");
@@ -850,5 +850,37 @@ public class SwiPrologMentalState implements MentalState {
 			updates.add(new PrologDBFormula(new Compound("me", arg), null));
 		}
 		return updates;
+	}
+
+	@Override
+	public Update convert(Message message, boolean isSent, AgentId receiver) {
+		jpl.Term term = JPLUtils.createCompound((isSent ? "sent" : "received"),
+				new Atom(receiver.getName()), convert(message));
+		return new PrologUpdate(term, message.getContent().getSourceInfo());
+	}
+
+	/**
+	 * returns imp(message.getContent) or int(message.getContent) depending on
+	 * message.mood.
+	 * 
+	 * @param message
+	 *            a {@link Message}
+	 * @return jpl.Term containing converted Message.
+	 */
+	private jpl.Term convert(Message message) {
+
+		jpl.Term term = ((PrologUpdate) message.getContent()).getTerm();
+		switch (message.getMood()) {
+		case IMPERATIVE:
+			term = JPLUtils.createCompound("imp", term);
+			break;
+		case INTERROGATIVE:
+			term = JPLUtils.createCompound("int", term);
+			break;
+		default:
+			break;
+		}
+		return term;
+
 	}
 }

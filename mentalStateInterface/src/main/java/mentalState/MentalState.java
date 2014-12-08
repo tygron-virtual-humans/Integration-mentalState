@@ -81,7 +81,7 @@ public interface MentalState {
 	/**
 	 * Converts a {@link UserSpecAction} to a {@link Action}.
 	 *
-	 * @param term
+	 * @param action
 	 *            The UserSpecAction.
 	 * @return An EIS action.
 	 */
@@ -205,4 +205,18 @@ public interface MentalState {
 	 */
 	Set<DatabaseFormula> updateAgentFact(Database database, boolean insert,
 			AgentId id, boolean me) throws KRDatabaseException;
+
+	/**
+	 * Convert a Message into something we can put in a database. FIXME can we
+	 * use the EIS converter here?
+	 * 
+	 * @param message
+	 * @param isSent
+	 *            true if this message is to be sent; false if it is to be
+	 *            received.
+	 * @param receiver
+	 * @return an Update. something like (sent ? "sent" : "received") + "('" +
+	 *         receiver.getName() + "', " + message.toString() + ")";
+	 */
+	Update convert(Message message, boolean isSent, AgentId receiver);
 }
