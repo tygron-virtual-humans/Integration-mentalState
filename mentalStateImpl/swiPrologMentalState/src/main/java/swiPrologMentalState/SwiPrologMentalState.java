@@ -53,6 +53,7 @@ import languageTools.program.agent.actions.DropAction;
 import languageTools.program.agent.actions.UserSpecAction;
 import languageTools.program.agent.msc.BelLiteral;
 import languageTools.program.agent.msc.MentalFormula;
+import languageTools.program.agent.msc.MentalLiteral;
 import languageTools.program.agent.msg.Message;
 import languageTools.program.agent.rules.Rule;
 import mentalState.BASETYPE;
@@ -118,13 +119,14 @@ public class SwiPrologMentalState implements MentalState {
 	public Term convert(Parameter parameter) {
 		if (parameter instanceof Identifier) {
 			// do not do quoting of the term, that is only for printing.
-			return (Term) new Atom(((Identifier) parameter).getValue());
+			return new PrologTerm(
+					new Atom(((Identifier) parameter).getValue()), null);
 		} else if (parameter instanceof Numeral) {
 			// check if parameter that is passed is a float.
 			// note that LONG numbers are converted to float
 			Number number = ((Numeral) parameter).getValue();
 			if (number instanceof Double || number instanceof Float) {
-				return (Term) new jpl.Float(number.doubleValue());
+				return new PrologTerm(new jpl.Float(number.doubleValue()), null);
 			} else {
 				// int or long. Check if it fits
 				if (number instanceof Long
@@ -133,7 +135,7 @@ public class SwiPrologMentalState implements MentalState {
 					throw new ArithmeticException("EIS long value " + number
 							+ " does not fit into a JPL integer");
 				}
-				return (Term) new jpl.Integer(number.intValue());
+				return new PrologTerm(new jpl.Integer(number.intValue()), null);
 			}
 		} else if (parameter instanceof Function) {
 			Function f = (Function) parameter;
@@ -141,17 +143,18 @@ public class SwiPrologMentalState implements MentalState {
 			for (Parameter p : f.getParameters()) {
 				terms.add(convert(p));
 			}
-			return (Term) new Compound(f.getName(),
-					terms.toArray(new jpl.Term[0]));
+			return new PrologTerm(new Compound(f.getName(),
+					terms.toArray(new jpl.Term[0])), null);
 		} else if (parameter instanceof ParameterList) {
 			ParameterList pl = (ParameterList) parameter;
 			List<jpl.Term> terms = new ArrayList<>(pl.size());
 			for (Parameter p : pl) {
 				terms.add((jpl.Term) convert(p));
 			}
-			return (Term) JPLUtils.termsToList(terms);
+			return new PrologTerm(JPLUtils.termsToList(terms), null);
 		} else if (parameter instanceof TruthValue) {
-			return (Term) new Atom(((TruthValue) parameter).getValue());
+			return new PrologTerm(
+					new Atom(((TruthValue) parameter).getValue()), null);
 		} else {
 			throw new IllegalArgumentException(
 					"Failed to convert EIS parameter " + parameter
@@ -161,11 +164,11 @@ public class SwiPrologMentalState implements MentalState {
 
 	@Override
 	public Parameter convert(Term term1) {
-		if (!(term1 instanceof Term)) {
+		if (!(term1 instanceof PrologTerm)) {
 			throw new IllegalArgumentException("term " + term1
-					+ " is not a jpl term");
+					+ " is not a prolog term");
 		}
-		jpl.Term term = (jpl.Term) term1;
+		jpl.Term term = ((PrologTerm) term1).getTerm();
 		if (term.isInteger()) {
 			return new Numeral(((jpl.Integer) term).intValue());
 		} else if (term.isFloat()) {
@@ -391,7 +394,7 @@ public class SwiPrologMentalState implements MentalState {
 
 			// declared predicates in knowledge base are covered, and can be
 			// removed
-			kbDecl = this.getDeclarations(agent.getAllKnowledge());
+			kbDecl = getDeclarations(agent.getAllKnowledge());
 			dynDecl.removeAll(kbDecl);
 
 			// Store results for goal base
@@ -489,7 +492,7 @@ public class SwiPrologMentalState implements MentalState {
 		Set<jpl.Term> declarations = new LinkedHashSet<>();
 		for (DatabaseFormula formula : formulae) {
 			jpl.Term term = ((PrologDBFormula) formula).getTerm();
-			declarations.addAll(this.getDeclarationNames(term));
+			declarations.addAll(getDeclarationNames(term));
 		}
 		return declarations;
 	}
@@ -514,10 +517,10 @@ public class SwiPrologMentalState implements MentalState {
 		// ASSUMES formula is either a clause (main operator = ':-'),
 		// conjunction (main operator = ','), or predicate
 		if (name.equals(":-")) { // clause, get head of clause
-			names.addAll(this.getDeclarationNames((((Compound) term).arg(1))));
+			names.addAll(getDeclarationNames((((Compound) term).arg(1))));
 		} else if (name.equals(",")) { // conjunction
-			names.addAll(this.getDeclarationNames((((Compound) term).arg(1))));
-			names.addAll(this.getDeclarationNames((((Compound) term).arg(2))));
+			names.addAll(getDeclarationNames((((Compound) term).arg(1))));
+			names.addAll(getDeclarationNames((((Compound) term).arg(2))));
 		} else if (!PrologOperators.prologBuiltin(term.name())
 				&& !this.reserved.contains("/(" + term.name() + "," + arity
 						+ ")")) { // predicate
@@ -544,7 +547,7 @@ public class SwiPrologMentalState implements MentalState {
 			jpl.Term term = ((PrologDBFormula) formula).getTerm();
 			// Only add names of calls in body of clause.
 			if (term.name().equals(":-") && term.arity() == 2) {
-				calls.addAll(this.getCallNames(term.arg(2)));
+				calls.addAll(getCallNames(term.arg(2)));
 			}
 		}
 		return calls;
@@ -579,35 +582,35 @@ public class SwiPrologMentalState implements MentalState {
 		// CHECK clause inside clause?
 		if (name.equals(":-") && arity == 2) {
 			// clause, get names in body
-			names.addAll(this.getCallNames(term.arg(2)));
+			names.addAll(getCallNames(term.arg(2)));
 		} else if (name.equals("not") && arity == 1) {
 			// negation, get label of argument
-			names.addAll(this.getCallNames(term.arg(1)));
+			names.addAll(getCallNames(term.arg(1)));
 		} else if (name.equals(";") && arity == 2) {
 			// disjunction
-			names.addAll(this.getCallNames(term.arg(1)));
-			names.addAll(this.getCallNames(term.arg(2)));
+			names.addAll(getCallNames(term.arg(1)));
+			names.addAll(getCallNames(term.arg(2)));
 		} else if (name.equals(",") && arity == 2) {
 			// conjunction
-			names.addAll(this.getCallNames(term.arg(1)));
-			names.addAll(this.getCallNames(term.arg(2)));
+			names.addAll(getCallNames(term.arg(1)));
+			names.addAll(getCallNames(term.arg(2)));
 		} // Do NOT add the cases below to getDeclarationNames.
 		else if (name.equals("forall") && arity == 2) {
 			// forall quantifier
-			names.addAll(this.getCallNames(term.arg(1)));
-			names.addAll(this.getCallNames(term.arg(2)));
+			names.addAll(getCallNames(term.arg(1)));
+			names.addAll(getCallNames(term.arg(2)));
 		} else if ((name.equals("findall") || name.equals("setof"))
 				&& arity == 3) {
 			// findall, setof operator
-			names.addAll(this.getCallNames(term.arg(2)));
+			names.addAll(getCallNames(term.arg(2)));
 		} else if (name.equals("aggregate") || name.equals("aggregate_all")) {
 			// aggregate operators, SWI Prolog specific (not part of ISO
 			// standard)
 			if (arity == 3) {
-				names.addAll(this.getCallNames(term.arg(2)));
+				names.addAll(getCallNames(term.arg(2)));
 			} else if (arity == 4) {
 				// 4 arguments
-				names.addAll(this.getCallNames(term.arg(3)));
+				names.addAll(getCallNames(term.arg(3)));
 			}
 		} else if (name.equals("include") && arity == 3) {
 			// special. First element will be called, but with 1 argument added.
@@ -647,13 +650,11 @@ public class SwiPrologMentalState implements MentalState {
 			ActionCombo acts = rule.getAction();
 			for (languageTools.program.agent.actions.Action<?> act : acts) {
 				if (act instanceof AdoptAction) {
-					names.addAll(this
-							.getCallNames(((PrologUpdate) ((AdoptAction) act)
-									.getUpdate()).getTerm()));
+					Update u = ((AdoptAction) act).getUpdate();
+					names.addAll(getCallNames(((PrologUpdate) u).getTerm()));
 				} else if (act instanceof DropAction) {
-					names.addAll(this
-							.getCallNames(((PrologUpdate) ((DropAction) act)
-									.getUpdate()).getTerm()));
+					Update u = ((DropAction) act).getUpdate();
+					names.addAll(getCallNames(((PrologUpdate) u).getTerm()));
 				}
 				// We do not need to check Send, Insert, Delete because they
 				// will not cause a query.
@@ -681,7 +682,8 @@ public class SwiPrologMentalState implements MentalState {
 			// arguments containing clauses (':-')
 			for (MentalFormula lit : rule.getCondition().getSubFormulas()) {
 				if (lit instanceof BelLiteral) {
-					names.addAll(getCallNames(((PrologQuery) lit).getTerm()));
+					Query q = ((BelLiteral) lit).getFormula();
+					names.addAll(getCallNames(((PrologQuery) q).getTerm()));
 				}
 			}
 		}
@@ -703,7 +705,8 @@ public class SwiPrologMentalState implements MentalState {
 		for (Rule rule : rules) {
 			for (MentalFormula lit : rule.getCondition().getSubFormulas()) {
 				if (!(lit instanceof BelLiteral)) {
-					names.addAll(getCallNames(((PrologQuery) lit).getTerm()));
+					Query q = ((MentalLiteral) lit).getFormula();
+					names.addAll(getCallNames(((PrologQuery) q).getTerm()));
 				}
 			}
 		}
@@ -715,7 +718,8 @@ public class SwiPrologMentalState implements MentalState {
 		Set<jpl.Term> names = new LinkedHashSet<>();
 		for (ActionSpecification rule : actionSpecifications) {
 			for (MentalFormula lit : rule.getPreCondition().getSubFormulas()) {
-				names.addAll(getCallNames(((PrologQuery) lit).getTerm()));
+				Query q = ((MentalLiteral) lit).getFormula();
+				names.addAll(getCallNames(((PrologQuery) q).getTerm()));
 			}
 		}
 		return names;
@@ -829,7 +833,8 @@ public class SwiPrologMentalState implements MentalState {
 		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
 		Set<DatabaseFormula> updates = new HashSet<>();
 		// Turn name into JPL term and create agent fact.
-		jpl.Term[] arg = { (jpl.Term) convert(new Identifier(id.getName())) };
+		PrologTerm prolog = (PrologTerm) convert(new Identifier(id.getName()));
+		jpl.Term[] arg = { prolog.getTerm() };
 		jpl.Term term = JPLUtils.createCompound("agent", arg);
 		// Insert or delete agent fact.
 		if (insert) {
@@ -862,13 +867,12 @@ public class SwiPrologMentalState implements MentalState {
 	/**
 	 * returns imp(message.getContent) or int(message.getContent) depending on
 	 * message.mood.
-	 * 
+	 *
 	 * @param message
 	 *            a {@link Message}
 	 * @return jpl.Term containing converted Message.
 	 */
 	private jpl.Term convert(Message message) {
-
 		jpl.Term term = ((PrologUpdate) message.getContent()).getTerm();
 		switch (message.getMood()) {
 		case IMPERATIVE:
@@ -881,6 +885,5 @@ public class SwiPrologMentalState implements MentalState {
 			break;
 		}
 		return term;
-
 	}
 }

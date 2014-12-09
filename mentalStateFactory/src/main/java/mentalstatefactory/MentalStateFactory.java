@@ -38,7 +38,7 @@ public class MentalStateFactory {
 	/**
 	 * A map of names to {@link MentalSt}s that are supported.
 	 */
-	private static Map<Class<? extends KRInterface>, MentalState> mentalstateInterfaces = new Hashtable<>();
+	private static Map<Class<? extends KRInterface>, Class<? extends MentalState>> mentalstateInterfaces = new Hashtable<>();
 
 	/**
 	 * The default interface that get be obtained by
@@ -55,8 +55,8 @@ public class MentalStateFactory {
 			MentalStateFactory.addInterface(defaultInterface);
 		} catch (IllegalStateException e) {
 			System.out
-			.println("Failed to initialize the SWI Prolog MentalState interface because "
-					+ e.getMessage());
+					.println("Failed to initialize the SWI Prolog MentalState interface because "
+							+ e.getMessage());
 		}
 	}
 
@@ -80,13 +80,20 @@ public class MentalStateFactory {
 	 */
 	public static MentalState getInterface(Class<? extends KRInterface> kri)
 			throws UnknownObjectException {
-		MentalState msInterface = mentalstateInterfaces.get(kri);
+		MentalState msInterface;
+		try {
+			msInterface = mentalstateInterfaces.get(kri).newInstance();
+		} catch (Exception e) {
+			throw new UnknownObjectException("Failed to instantiate " + kri
+					+ ": " + e.getMessage());
+		}
 		if (msInterface == null) {
 			throw new UnknownObjectException("Could not find interface " + kri
 					+ "; the following interfaces are available: "
 					+ mentalstateInterfaces.keySet());
+		} else {
+			return msInterface;
 		}
-		return msInterface;
 	}
 
 	/**
@@ -106,8 +113,8 @@ public class MentalStateFactory {
 			throw new IllegalStateException("Interface "
 					+ msInterface.getKRInterface() + " already present");
 		} else {
-			mentalstateInterfaces
-					.put(msInterface.getKRInterface(), msInterface);
+			mentalstateInterfaces.put(msInterface.getKRInterface(),
+					msInterface.getClass());
 		}
 	}
 
