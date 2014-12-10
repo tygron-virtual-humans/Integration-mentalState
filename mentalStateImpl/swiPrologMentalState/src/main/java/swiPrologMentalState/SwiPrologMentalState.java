@@ -158,7 +158,7 @@ public class SwiPrologMentalState implements MentalState {
 		} else {
 			throw new IllegalArgumentException(
 					"Failed to convert EIS parameter " + parameter
-							+ " to Prolog.");
+					+ " to Prolog.");
 		}
 	}
 
@@ -193,14 +193,14 @@ public class SwiPrologMentalState implements MentalState {
 			// Check whether we're dealing with a list or other operator.
 			if (name.equals(".")) {
 				for (jpl.Term arg : JPLUtils.getOperands(".", term)) {
-					parameters.add(convert((Term) arg));
+					parameters.add(convert(new PrologTerm(arg, null)));
 				}
 				// Remove the empty list.
 				parameters.removeLast();
 				return new ParameterList(parameters);
 			} else {
 				for (jpl.Term arg : term.args()) {
-					parameters.add(convert((Term) arg));
+					parameters.add(convert(new PrologTerm(arg, null)));
 				}
 				return new Function(name, parameters);
 			}
@@ -268,8 +268,8 @@ public class SwiPrologMentalState implements MentalState {
 	@Override
 	public Database makeDatabase(BASETYPE type,
 			Collection<DatabaseFormula> theory, AgentProgram agent)
-			throws KRInitFailedException, KRDatabaseException,
-			KRQueryFailedException {
+					throws KRInitFailedException, KRDatabaseException,
+					KRQueryFailedException {
 		if (agent == null) {
 			throw new NullPointerException("agent=null");
 		}
@@ -347,10 +347,10 @@ public class SwiPrologMentalState implements MentalState {
 								+ " the belief section defines "
 								+ check.toString().substring(1,
 										check.toString().length() - 1)
-								+ " which "
-								+ (check.size() == 1 ? "has" : "have")
-								+ " been defined in the knowledge section already.\n"
-								+ "The SWI Prolog modules used would produce name clashes.");
+										+ " which "
+										+ (check.size() == 1 ? "has" : "have")
+										+ " been defined in the knowledge section already.\n"
+										+ "The SWI Prolog modules used would produce name clashes.");
 			}
 		}
 		if (!this.dynamicDeclarationsForGoals.containsKey(name)) {
