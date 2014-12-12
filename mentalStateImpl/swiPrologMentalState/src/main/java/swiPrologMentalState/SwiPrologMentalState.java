@@ -52,7 +52,6 @@ import languageTools.program.agent.actions.AdoptAction;
 import languageTools.program.agent.actions.DropAction;
 import languageTools.program.agent.actions.UserSpecAction;
 import languageTools.program.agent.msc.BelLiteral;
-import languageTools.program.agent.msc.MentalFormula;
 import languageTools.program.agent.msc.MentalLiteral;
 import languageTools.program.agent.msg.Message;
 import languageTools.program.agent.rules.Rule;
@@ -160,7 +159,7 @@ public class SwiPrologMentalState implements MentalState {
 		} else {
 			throw new IllegalArgumentException(
 					"Failed to convert EIS parameter " + parameter
-					+ " to Prolog.");
+							+ " to Prolog.");
 		}
 	}
 
@@ -270,8 +269,8 @@ public class SwiPrologMentalState implements MentalState {
 	@Override
 	public Database makeDatabase(BASETYPE type,
 			Collection<DatabaseFormula> theory, AgentProgram agent)
-					throws KRInitFailedException, KRDatabaseException,
-					KRQueryFailedException {
+			throws KRInitFailedException, KRDatabaseException,
+			KRQueryFailedException {
 		if (agent == null) {
 			throw new NullPointerException("agent=null");
 		}
@@ -349,10 +348,10 @@ public class SwiPrologMentalState implements MentalState {
 								+ " the belief section defines "
 								+ check.toString().substring(1,
 										check.toString().length() - 1)
-										+ " which "
-										+ (check.size() == 1 ? "has" : "have")
-										+ " been defined in the knowledge section already.\n"
-										+ "The SWI Prolog modules used would produce name clashes.");
+								+ " which "
+								+ (check.size() == 1 ? "has" : "have")
+								+ " been defined in the knowledge section already.\n"
+								+ "The SWI Prolog modules used would produce name clashes.");
 			}
 		}
 		if (!this.dynamicDeclarationsForGoals.containsKey(name)) {
@@ -682,9 +681,9 @@ public class SwiPrologMentalState implements MentalState {
 		for (Rule rule : rules) {
 			// ASSUMES grammar does not allow mental state conditions that have
 			// arguments containing clauses (':-')
-			for (MentalFormula lit : rule.getCondition().getSubFormulas()) {
-				if (lit instanceof MentalLiteral && lit instanceof BelLiteral) {
-					Query q = ((BelLiteral) lit).getFormula();
+			for (MentalLiteral lit : rule.getCondition().getAllLiterals()) {
+				if (lit instanceof BelLiteral) {
+					Query q = lit.getFormula();
 					names.addAll(getCallNames(((PrologQuery) q).getTerm()));
 				}
 			}
@@ -705,10 +704,9 @@ public class SwiPrologMentalState implements MentalState {
 	private Set<jpl.Term> getGoalConditionsFromRules(List<Rule> rules) {
 		Set<jpl.Term> names = new LinkedHashSet<>();
 		for (Rule rule : rules) {
-			for (MentalFormula lit : rule.getCondition().getSubFormulas()) {
-				if (lit instanceof MentalLiteral
-						&& !(lit instanceof BelLiteral)) {
-					Query q = ((MentalLiteral) lit).getFormula();
+			for (MentalLiteral lit : rule.getCondition().getAllLiterals()) {
+				if (!(lit instanceof BelLiteral)) {
+					Query q = lit.getFormula();
 					names.addAll(getCallNames(((PrologQuery) q).getTerm()));
 				}
 			}
@@ -720,11 +718,9 @@ public class SwiPrologMentalState implements MentalState {
 			Iterable<ActionSpecification> actionSpecifications) {
 		Set<jpl.Term> names = new LinkedHashSet<>();
 		for (ActionSpecification rule : actionSpecifications) {
-			for (MentalFormula lit : rule.getPreCondition().getSubFormulas()) {
-				if (lit instanceof MentalLiteral) {
-					Query q = ((MentalLiteral) lit).getFormula();
-					names.addAll(getCallNames(((PrologQuery) q).getTerm()));
-				}
+			for (MentalLiteral lit : rule.getPreCondition().getAllLiterals()) {
+				Query q = lit.getFormula();
+				names.addAll(getCallNames(((PrologQuery) q).getTerm()));
 			}
 		}
 		return names;
