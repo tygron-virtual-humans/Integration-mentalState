@@ -149,7 +149,8 @@ public class SwiPrologMentalState implements MentalState {
 			ParameterList pl = (ParameterList) parameter;
 			List<jpl.Term> terms = new ArrayList<>(pl.size());
 			for (Parameter p : pl) {
-				terms.add((jpl.Term) convert(p));
+				PrologTerm t = (PrologTerm) convert(p);
+				terms.add(t.getTerm());
 			}
 			return new PrologTerm(JPLUtils.termsToList(terms), null);
 		} else if (parameter instanceof TruthValue) {
@@ -231,7 +232,7 @@ public class SwiPrologMentalState implements MentalState {
 		for (Term term : action.getParameters()) {
 			parameters.add(convert(term));
 		}
-		return new eis.iilang.Action(action.getName(), parameters);
+		return new Action(action.getName(), parameters);
 	}
 
 	@Override
