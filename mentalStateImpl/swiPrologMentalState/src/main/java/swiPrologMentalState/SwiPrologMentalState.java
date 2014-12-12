@@ -139,12 +139,13 @@ public class SwiPrologMentalState implements MentalState {
 			}
 		} else if (parameter instanceof Function) {
 			Function f = (Function) parameter;
-			List<Term> terms = new ArrayList<>(f.getParameters().size());
+			List<jpl.Term> terms = new ArrayList<>(f.getParameters().size());
 			for (Parameter p : f.getParameters()) {
-				terms.add(convert(p));
+				PrologTerm t = (PrologTerm) convert(p);
+				terms.add(t.getTerm());
 			}
 			return new PrologTerm(new Compound(f.getName(),
-					terms.toArray(new jpl.Term[0])), null);
+					terms.toArray(new jpl.Term[terms.size()])), null);
 		} else if (parameter instanceof ParameterList) {
 			ParameterList pl = (ParameterList) parameter;
 			List<jpl.Term> terms = new ArrayList<>(pl.size());
@@ -159,7 +160,7 @@ public class SwiPrologMentalState implements MentalState {
 		} else {
 			throw new IllegalArgumentException(
 					"Failed to convert EIS parameter " + parameter
-							+ " to Prolog.");
+					+ " to Prolog.");
 		}
 	}
 
@@ -269,8 +270,8 @@ public class SwiPrologMentalState implements MentalState {
 	@Override
 	public Database makeDatabase(BASETYPE type,
 			Collection<DatabaseFormula> theory, AgentProgram agent)
-			throws KRInitFailedException, KRDatabaseException,
-			KRQueryFailedException {
+					throws KRInitFailedException, KRDatabaseException,
+					KRQueryFailedException {
 		if (agent == null) {
 			throw new NullPointerException("agent=null");
 		}
@@ -348,10 +349,10 @@ public class SwiPrologMentalState implements MentalState {
 								+ " the belief section defines "
 								+ check.toString().substring(1,
 										check.toString().length() - 1)
-								+ " which "
-								+ (check.size() == 1 ? "has" : "have")
-								+ " been defined in the knowledge section already.\n"
-								+ "The SWI Prolog modules used would produce name clashes.");
+										+ " which "
+										+ (check.size() == 1 ? "has" : "have")
+										+ " been defined in the knowledge section already.\n"
+										+ "The SWI Prolog modules used would produce name clashes.");
 			}
 		}
 		if (!this.dynamicDeclarationsForGoals.containsKey(name)) {
