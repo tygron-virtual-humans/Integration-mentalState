@@ -6,7 +6,7 @@
 
 	<groupId>com.github.goalhub.mentalstate</groupId>
 	<artifactId>mentalstateinterface</artifactId>
-	<version>1.3.0</version>
+	<version>1.3.1</version>
 	<packaging>jar</packaging>
 
 	<name>Mental State Interface definition</name>
@@ -24,6 +24,8 @@
 		<developer>
 			<name>Koen Hindriks</name>
 			<email>k.v.hindriks@gmail.com</email>
+			<organization>goalhub</organization>
+			<organizationUrl>https://github.com/koenhindriks</organizationUrl>
 		</developer>
 	</developers>
 
@@ -33,18 +35,18 @@
 	</organization>
 
 	<issueManagement>
-		<url>https://github.com/goalhub/mentalstate/issues</url>
+		<url>https://github.com/goalhub/mentalState/issues</url>
 		<system>Github Issues</system>
 	</issueManagement>
 
 	<scm>
 		<connection>scm:git:git@github.com:goalhub/mentalState.git</connection>
 		<developerConnection>scm:git:git@github.com:goalhub/mentalState.git</developerConnection>
+		<url>https://github.com:goalhub/mentalState</url>
 	</scm>
-
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<github.global.server>github</github.global.server>
 	</properties>
 
 	<repositories>
@@ -57,22 +59,19 @@
 			<id>eishub-mvn-repo</id>
 			<url>https://raw.github.com/eishub/mvn-repo/master</url>
 		</repository>
-
 	</repositories>
-
-	<distributionManagement>
-		<repository>
-			<id>internal.repo</id>
-			<name>Temporary Staging Repository</name>
-			<url>file://${project.build.directory}/mvn-repo</url>
-		</repository>
-	</distributionManagement>
 
 	<dependencies>		
 		<dependency>
 			<groupId>com.github.goalhub.grammar</groupId>
 			<artifactId>languageTools</artifactId>
-			<version>1.1.0</version>
+			<version>1.1.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.github.goalhub.krTools</groupId>
+			<artifactId>krInterface</artifactId>
+			<version>1.1.1</version>
 		</dependency>
 
 		<dependency>
@@ -84,6 +83,34 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.9</version>
+				<executions>
+					<execution>
+						<id>analyze</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>analyze-only</goal>
+						</goals>
+						<configuration>
+							<failOnWarning>true</failOnWarning>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -113,18 +140,25 @@
 				</executions>
 			</plugin>
 
-
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
-
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.5.2</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
 				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
-
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
@@ -139,9 +173,9 @@
 				<artifactId>site-maven-plugin</artifactId>
 				<version>0.10</version>
 				<configuration>
+					<server>github</server>
 					<!-- git commit message -->
-					<message>Maven artifacts for ${project.name} environment version
-						${project.version}</message>
+					<message>Maven artifacts for ${project.name} version ${project.version}</message>
 					<!-- matches distribution management repository url above -->
 					<outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
 					<!-- remote branch name -->
@@ -154,11 +188,9 @@
 					<repositoryName>mvn-repo</repositoryName>
 					<!-- github organization -->
 					<repositoryOwner>goalhub</repositoryOwner>
-					<dryrun>true</dryrun>
 				</configuration>
 				<executions>
-					<!-- run site-maven-plugin's 'site' target as part of the build's normal 
-						'deploy' phase -->
+					<!-- run site-maven-plugin as part of the build's 'deploy' phase -->
 					<execution>
 						<goals>
 							<goal>site</goal>
