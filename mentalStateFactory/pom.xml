@@ -137,6 +137,13 @@
 			</plugin>
 
 			<plugin>
+		      <groupId>org.apache.maven.plugins</groupId>
+		      <artifactId>maven-jar-plugin</artifactId>
+		      <version>2.5</version>
+		    </plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.5.2</version>
 				<configuration>
@@ -149,7 +156,7 @@
 						<id>make-assembly</id>
 						<phase>package</phase>
 						<goals>
-							<goal>attached</goal>
+							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -188,6 +195,7 @@
 				<executions>
 					<!-- run site-maven-plugin as part of the build's 'deploy' phase -->
 					<execution>
+						<id>git-deploy</id>
 						<goals>
 							<goal>site</goal>
 						</goals>
