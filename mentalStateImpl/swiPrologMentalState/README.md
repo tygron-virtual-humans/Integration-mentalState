@@ -18,7 +18,7 @@ Dependency Information
 <dependency>
 	<groupId>com.github.goalhub.mentalstate</groupId>
 	<artifactId>swiprologmentalstate</artifactId>
-	<version>1.3.2-SNAPSHOT</version>
+	<version>1.3.3</version>
 </dependency>
 ```	
 
