@@ -18,7 +18,7 @@ Dependency Information
 <dependency>
 	<groupId>com.github.goalhub.mentalstate</groupId>
 	<artifactId>mentalstatefactory</artifactId>
-	<version>1.1.2-SNAPSHOT</version>
+	<version>1.1.3</version>
 </dependency>
 ```
 
