@@ -56,6 +56,7 @@ import languageTools.program.agent.msc.MentalLiteral;
 import languageTools.program.agent.msg.Message;
 import languageTools.program.agent.rules.Rule;
 import mentalState.BASETYPE;
+import mentalState.DependencyGraph;
 import mentalState.MentalState;
 import swiprolog.SWIPrologInterface;
 import swiprolog.database.SWIPrologDatabase;
@@ -887,5 +888,10 @@ public class SwiPrologMentalState implements MentalState {
 			break;
 		}
 		return term;
+	}
+
+	@Override
+	public DependencyGraph<?> createDependencyGraph() {
+		return new SwiDependencyGraph();
 	}
 }

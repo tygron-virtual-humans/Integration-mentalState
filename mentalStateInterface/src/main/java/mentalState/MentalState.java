@@ -209,7 +209,7 @@ public interface MentalState {
 	/**
 	 * Convert a Message into something we can put in a database. FIXME can we
 	 * use the EIS converter here?
-	 * 
+	 *
 	 * @param message
 	 * @param isSent
 	 *            true if this message is to be sent; false if it is to be
@@ -219,4 +219,11 @@ public interface MentalState {
 	 *         receiver.getName() + "', " + message.toString() + ")";
 	 */
 	Update convert(Message message, boolean isSent, AgentId receiver);
+
+	/**
+	 * Creates an empty, language specific {@link DependencyGraph}.
+	 *
+	 * @return An empty dependency graph.
+	 */
+	DependencyGraph<?> createDependencyGraph();
 }
