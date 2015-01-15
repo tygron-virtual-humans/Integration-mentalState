@@ -128,14 +128,8 @@ public class SwiPrologMentalState implements MentalState {
 			if (number instanceof Double || number instanceof Float) {
 				return new PrologTerm(new jpl.Float(number.doubleValue()), null);
 			} else {
-				// int or long. Check if it fits
-				if (number instanceof Long
-						&& (number.longValue() < Integer.MIN_VALUE || number
-								.longValue() > Integer.MAX_VALUE)) {
-					throw new ArithmeticException("EIS long value " + number
-							+ " does not fit into a JPL integer");
-				}
-				return new PrologTerm(new jpl.Integer(number.intValue()), null);
+				return new PrologTerm(JPLUtils.createIntegerNumber(number
+						.longValue()), null);
 			}
 		} else if (parameter instanceof Function) {
 			Function f = (Function) parameter;
