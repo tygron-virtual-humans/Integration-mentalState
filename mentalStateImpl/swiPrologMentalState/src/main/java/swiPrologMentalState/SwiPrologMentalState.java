@@ -152,9 +152,9 @@ public class SwiPrologMentalState implements MentalState {
 			return new PrologTerm(
 					new Atom(((TruthValue) parameter).getValue()), null);
 		} else {
-			throw new IllegalArgumentException(
-					"Failed to convert EIS parameter " + parameter
-							+ " to Prolog.");
+			throw new IllegalArgumentException("Encountered EIS parameter "
+					+ parameter + " of unsupported type "
+					+ parameter.getClass().getCanonicalName());
 		}
 	}
 
@@ -162,7 +162,7 @@ public class SwiPrologMentalState implements MentalState {
 	public Parameter convert(Term term1) {
 		if (!(term1 instanceof PrologTerm)) {
 			throw new IllegalArgumentException("term " + term1
-					+ " is not a prolog term");
+					+ " is not a SWI prolog term");
 		}
 		jpl.Term term = ((PrologTerm) term1).getTerm();
 		if (term.isInteger()) {
@@ -181,9 +181,9 @@ public class SwiPrologMentalState implements MentalState {
 			return new Identifier(name);
 		} else if (term.isVariable()) {
 			throw new UnsupportedOperationException(
-					"Trying to convert variable "
+					"conversion of the variable "
 							+ term
-							+ " to EIS parameter but EIS does not support variables.");
+							+ " to EIS parameter is not possible: EIS does not support variables.");
 		} else if (term.isCompound()) {
 			LinkedList<Parameter> parameters = new LinkedList<>();
 			// Check whether we're dealing with a list or other operator.
@@ -201,10 +201,9 @@ public class SwiPrologMentalState implements MentalState {
 				return new Function(name, parameters);
 			}
 		} else {
-			throw new UnsupportedOperationException(
-					"Trying to convert term "
-							+ term
-							+ " to EIS parameter but EIS conversion of this type of term is not supported.");
+			throw new UnsupportedOperationException("conversion of term "
+					+ term + " of type " + term.getClass().getCanonicalName()
+					+ " to EIS parameter is not supported.");
 		}
 	}
 
@@ -338,7 +337,7 @@ public class SwiPrologMentalState implements MentalState {
 			check.retainAll(kbDecl);
 			if (!check.isEmpty()) {
 				throw new KRInitFailedException(
-						"For agent "
+						"for agent "
 								+ name
 								+ " the belief section defines "
 								+ check.toString().substring(1,
@@ -410,7 +409,7 @@ public class SwiPrologMentalState implements MentalState {
 			}
 		}
 		if (!type.equals(BASETYPE.GOALBASE) && found != null) {
-			throw new KRInitFailedException("Attempt to add second " + type);
+			throw new KRInitFailedException("attempt to add second " + type);
 		}
 
 		// TODO: HACKY way to do this... but we need access to the

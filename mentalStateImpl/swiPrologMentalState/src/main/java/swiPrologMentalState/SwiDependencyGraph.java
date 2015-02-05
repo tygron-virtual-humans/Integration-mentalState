@@ -79,14 +79,14 @@ public class SwiDependencyGraph extends DependencyGraph<PrologTerm> {
 			}
 			if (queried) {
 				throw new KRDatabaseException(
-						"A clause with main operator :-/2 cannot be queried.");
+						"a clause with main operator :-/2 cannot be queried.");
 			}
 		} else {
 			if (reserved(signature) && defined) {
 				throw new KRDatabaseException(
-						"Attempt to redefine "
+						"attempt to redefine "
 								+ signature
-								+ "; Prolog built-in or reserved GOAL operators should not be redefined.");
+								+ "; Prolog built-in or reserved GOAL operators can not be redefined.");
 			}
 			addTerm(term, formula.getSourceInfo(), defined, queried);
 		}
