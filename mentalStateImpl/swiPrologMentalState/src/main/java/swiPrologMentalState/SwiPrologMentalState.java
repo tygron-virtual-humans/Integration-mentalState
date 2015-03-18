@@ -49,7 +49,10 @@ import languageTools.program.agent.AgentProgram;
 import languageTools.program.agent.Module;
 import languageTools.program.agent.actions.ActionCombo;
 import languageTools.program.agent.actions.AdoptAction;
+import languageTools.program.agent.actions.DeleteAction;
 import languageTools.program.agent.actions.DropAction;
+import languageTools.program.agent.actions.InsertAction;
+import languageTools.program.agent.actions.SendAction;
 import languageTools.program.agent.actions.UserSpecAction;
 import languageTools.program.agent.msc.BelLiteral;
 import languageTools.program.agent.msc.MentalLiteral;
@@ -639,6 +642,15 @@ public class SwiPrologMentalState implements MentalState {
 		return names;
 	}
 
+	/**
+	 * Get all declarations from the actions in the rules. These actions can
+	 * create new terms in the databases.
+	 * 
+	 * @param rules
+	 *            the rules that contain
+	 *            {@link languageTools.program.agent.actions.Action}s.
+	 * @return set of {@link jpl.Term}s that can be created by these rules.
+	 */
 	private Set<jpl.Term> getDeclarationsFromRules(List<Rule> rules) {
 		Set<jpl.Term> names = new LinkedHashSet<>();
 		for (Rule rule : rules) {
@@ -650,9 +662,21 @@ public class SwiPrologMentalState implements MentalState {
 				} else if (act instanceof DropAction) {
 					Update u = ((DropAction) act).getUpdate();
 					names.addAll(getCallNames(((PrologUpdate) u).getTerm()));
+				} else if (act instanceof InsertAction) {
+					Update u = ((InsertAction) act).getUpdate();
+					names.addAll(getCallNames(((PrologUpdate) u).getTerm()));
+				} else if (act instanceof DeleteAction) {
+					Update u = ((DeleteAction) act).getUpdate();
+					names.addAll(getCallNames(((PrologUpdate) u).getTerm()));
 				}
-				// We do not need to check Send, Insert, Delete because they
-				// will not cause a query.
+				// The sent predicate is already handled elsewhere.
+
+				/*
+				 * #3468 Even though the Insert and Delete themselves do not
+				 * cause query calls and therefore do not really need to declare
+				 * them at this point to run the program, it may be that the
+				 * test framework needs these terms
+				 */
 			}
 		}
 		return names;
