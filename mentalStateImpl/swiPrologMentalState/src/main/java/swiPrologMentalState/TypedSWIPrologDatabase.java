@@ -40,7 +40,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 	public TypedSWIPrologDatabase(SwiPrologMentalState state,
 			BASETYPE databaseType, Collection<DatabaseFormula> content,
 			String name, Set<Term> dynamicBeliefs, Set<Term> dynamicGoals)
-					throws KRInitFailedException, KRDatabaseException,
+			throws KRInitFailedException, KRDatabaseException,
 			KRQueryFailedException {
 		super(content);
 		// Used for initialization purposes; enables to keep track of related
@@ -128,10 +128,9 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 						export_received));
 				rawquery(JPLUtils
 						.createCompound(":", getJPLName(), export_sent));
-			} catch (Exception e) {
-				throw new KRInitFailedException("Initialization of the mail"
-						+ "box of agent " + this.owner + "failed: "
-						+ e.getMessage(), e);
+			} catch (KRQueryFailedException e) {
+				throw new KRInitFailedException("initialization of the mail"
+						+ "box of agent " + this.owner + "failed", e);
 			}
 			// Ignore initial content; mailbox is empty initially.
 			// Import received and sent predicates into belief base, if it
@@ -194,7 +193,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 				.getKnowledge(this.owner);
 		// A knowledge base must already have been created; get its content.
 		if (knowledge == null) {
-			throw new KRInitFailedException("Attempt to create belief or goal "
+			throw new IllegalStateException("attempt to create belief or goal "
 					+ "base before knowledge base has been created");
 		}
 		return knowledge;
@@ -230,7 +229,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			break;
 		default:
 			throw new UnsupportedOperationException(
-					"Cannot import percepts from " + this.type);
+					"can not import percepts from " + this.type);
 		}
 
 		// Create an anonymous variable.
@@ -286,7 +285,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			break;
 		default:
 			throw new UnsupportedOperationException(
-					"Cannot import messages from " + this.type);
+					"cannot import messages from " + this.type);
 		}
 		// Create an anonymous variable.
 		Variable anonymousVar = new Variable("_");

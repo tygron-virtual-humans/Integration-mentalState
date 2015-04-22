@@ -49,13 +49,16 @@ import languageTools.program.agent.AgentProgram;
 import languageTools.program.agent.Module;
 import languageTools.program.agent.actions.ActionCombo;
 import languageTools.program.agent.actions.AdoptAction;
+import languageTools.program.agent.actions.DeleteAction;
 import languageTools.program.agent.actions.DropAction;
+import languageTools.program.agent.actions.InsertAction;
 import languageTools.program.agent.actions.UserSpecAction;
 import languageTools.program.agent.msc.BelLiteral;
 import languageTools.program.agent.msc.MentalLiteral;
 import languageTools.program.agent.msg.Message;
 import languageTools.program.agent.rules.Rule;
 import mentalState.BASETYPE;
+import mentalState.DependencyGraph;
 import mentalState.MentalState;
 import swiprolog.SWIPrologInterface;
 import swiprolog.database.SWIPrologDatabase;
@@ -127,14 +130,8 @@ public class SwiPrologMentalState implements MentalState {
 			if (number instanceof Double || number instanceof Float) {
 				return new PrologTerm(new jpl.Float(number.doubleValue()), null);
 			} else {
-				// int or long. Check if it fits
-				if (number instanceof Long
-						&& (number.longValue() < Integer.MIN_VALUE || number
-								.longValue() > Integer.MAX_VALUE)) {
-					return new PrologTerm(new jpl.Float(number.longValue()),
-							null);
-				}
-				return new PrologTerm(new jpl.Integer(number.intValue()), null);
+				return new PrologTerm(JPLUtils.createIntegerNumber(number
+						.longValue()), null);
 			}
 		} else if (parameter instanceof Function) {
 			Function f = (Function) parameter;
@@ -157,9 +154,9 @@ public class SwiPrologMentalState implements MentalState {
 			return new PrologTerm(
 					new Atom(((TruthValue) parameter).getValue()), null);
 		} else {
-			throw new IllegalArgumentException(
-					"Failed to convert EIS parameter " + parameter
-							+ " to Prolog.");
+			throw new IllegalArgumentException("Encountered EIS parameter "
+					+ parameter + " of unsupported type "
+					+ parameter.getClass().getCanonicalName());
 		}
 	}
 
@@ -167,7 +164,7 @@ public class SwiPrologMentalState implements MentalState {
 	public Parameter convert(Term term1) {
 		if (!(term1 instanceof PrologTerm)) {
 			throw new IllegalArgumentException("term " + term1
-					+ " is not a prolog term");
+					+ " is not a SWI prolog term");
 		}
 		jpl.Term term = ((PrologTerm) term1).getTerm();
 		if (term.isInteger()) {
@@ -186,9 +183,9 @@ public class SwiPrologMentalState implements MentalState {
 			return new Identifier(name);
 		} else if (term.isVariable()) {
 			throw new UnsupportedOperationException(
-					"Trying to convert variable "
+					"conversion of the variable "
 							+ term
-							+ " to EIS parameter but EIS does not support variables.");
+							+ " to EIS parameter is not possible: EIS does not support variables.");
 		} else if (term.isCompound()) {
 			LinkedList<Parameter> parameters = new LinkedList<>();
 			// Check whether we're dealing with a list or other operator.
@@ -206,10 +203,9 @@ public class SwiPrologMentalState implements MentalState {
 				return new Function(name, parameters);
 			}
 		} else {
-			throw new UnsupportedOperationException(
-					"Trying to convert term "
-							+ term
-							+ " to EIS parameter but EIS conversion of this type of term is not supported.");
+			throw new UnsupportedOperationException("conversion of term "
+					+ term + " of type " + term.getClass().getCanonicalName()
+					+ " to EIS parameter is not supported.");
 		}
 	}
 
@@ -269,8 +265,8 @@ public class SwiPrologMentalState implements MentalState {
 	@Override
 	public Database makeDatabase(BASETYPE type,
 			Collection<DatabaseFormula> theory, AgentProgram agent)
-			throws KRInitFailedException, KRDatabaseException,
-			KRQueryFailedException {
+					throws KRInitFailedException, KRDatabaseException,
+					KRQueryFailedException {
 		if (agent == null) {
 			throw new NullPointerException("agent=null");
 		}
@@ -343,15 +339,15 @@ public class SwiPrologMentalState implements MentalState {
 			check.retainAll(kbDecl);
 			if (!check.isEmpty()) {
 				throw new KRInitFailedException(
-						"For agent "
+						"for agent "
 								+ name
 								+ " the belief section defines "
 								+ check.toString().substring(1,
 										check.toString().length() - 1)
-								+ " which "
-								+ (check.size() == 1 ? "has" : "have")
-								+ " been defined in the knowledge section already.\n"
-								+ "The SWI Prolog modules used would produce name clashes.");
+										+ " which "
+										+ (check.size() == 1 ? "has" : "have")
+										+ " been defined in the knowledge section already.\n"
+										+ "The SWI Prolog modules used would produce name clashes.");
 			}
 		}
 		if (!this.dynamicDeclarationsForGoals.containsKey(name)) {
@@ -415,7 +411,7 @@ public class SwiPrologMentalState implements MentalState {
 			}
 		}
 		if (!type.equals(BASETYPE.GOALBASE) && found != null) {
-			throw new KRInitFailedException("Attempt to add second " + type);
+			throw new KRInitFailedException("attempt to add second " + type);
 		}
 
 		// TODO: HACKY way to do this... but we need access to the
@@ -645,6 +641,15 @@ public class SwiPrologMentalState implements MentalState {
 		return names;
 	}
 
+	/**
+	 * Get all declarations from the actions in the rules. These actions can
+	 * create new terms in the databases.
+	 *
+	 * @param rules
+	 *            the rules that contain
+	 *            {@link languageTools.program.agent.actions.Action}s.
+	 * @return set of {@link jpl.Term}s that can be created by these rules.
+	 */
 	private Set<jpl.Term> getDeclarationsFromRules(List<Rule> rules) {
 		Set<jpl.Term> names = new LinkedHashSet<>();
 		for (Rule rule : rules) {
@@ -656,9 +661,21 @@ public class SwiPrologMentalState implements MentalState {
 				} else if (act instanceof DropAction) {
 					Update u = ((DropAction) act).getUpdate();
 					names.addAll(getCallNames(((PrologUpdate) u).getTerm()));
+				} else if (act instanceof InsertAction) {
+					Update u = ((InsertAction) act).getUpdate();
+					names.addAll(getCallNames(((PrologUpdate) u).getTerm()));
+				} else if (act instanceof DeleteAction) {
+					Update u = ((DeleteAction) act).getUpdate();
+					names.addAll(getCallNames(((PrologUpdate) u).getTerm()));
 				}
-				// We do not need to check Send, Insert, Delete because they
-				// will not cause a query.
+				// The sent predicate is already handled elsewhere.
+
+				/*
+				 * #3468 Even though the Insert and Delete themselves do not
+				 * cause query calls and therefore do not really need to declare
+				 * them at this point to run the program, it may be that the
+				 * test framework needs these terms
+				 */
 			}
 		}
 		return names;
@@ -887,5 +904,10 @@ public class SwiPrologMentalState implements MentalState {
 			break;
 		}
 		return term;
+	}
+
+	@Override
+	public DependencyGraph<?> createDependencyGraph() {
+		return new SwiDependencyGraph();
 	}
 }
