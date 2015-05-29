@@ -60,7 +60,7 @@ public enum BASETYPE {
 	/**
 	 * Database storing emotions
 	 */
-	TESTBASE("emotion base");
+	EMOTIONBASE("emotion base");
 
 	/**
 	 * The proper string-representation of this {@link BASETYPE}.
