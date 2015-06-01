@@ -10,7 +10,7 @@
 	<packaging>jar</packaging>
 
 	<name>Mental State Interface definition</name>
-	<url>https://github.com/tygron-virtual-humans/Integration-mentalState</url>
+	<url>https://github.com/tygron-virtual-humans/mentalState/tree/master/mentalStateInterface</url>
 	<description>Provides an interface to access an agent's mental state in a generic way, independent of the specific language specification.</description>
 
 	<licenses>
@@ -40,7 +40,7 @@
 	</issueManagement>
 
 	<scm>
-			<connection>scm:git:git@github.com:tygron-virtual-humans/mentalState.git</connection>
+		<connection>scm:git:git@github.com:tygron-virtual-humans/mentalState.git</connection>
 		<developerConnection>scm:git:git@github.com:tygron-virtual-humans/mentalState.git</developerConnection>
 		<url>https://github.com:tygron-virtual-humans/mentalState</url>
 	</scm>
@@ -50,16 +50,16 @@
 	</properties>
 
 	<repositories>
-		<repository>
+			<repository>
 			<id>Integration-mvn-repo</id>
 			<url>https://raw.github.com/tygron-virtual-humans/Integration-mvn-repo/master</url>
 		</repository>
-	
+		
 		<repository>
 			<id>goalhub-mvn-repo</id>
 			<url>https://raw.github.com/goalhub/mvn-repo/master</url>
 		</repository>
-		
+
 		<repository>
 			<id>eishub-mvn-repo</id>
 			<url>https://raw.github.com/eishub/mvn-repo/master</url>
@@ -119,23 +119,20 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.1</version>
-                <configuration>
-                    <failOnError>false</failOnError>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -206,7 +203,7 @@
 					<!-- github repo name -->
 					<repositoryName>mvn-repo</repositoryName>
 					<!-- github organization -->
-					<repositoryOwner>tygron-virtual-humans/</repositoryOwner>
+					<repositoryOwner>tygron-virtual-humans</repositoryOwner>
 				</configuration>
 				<executions>
 					<!-- run site-maven-plugin as part of the build's 'deploy' phase -->
