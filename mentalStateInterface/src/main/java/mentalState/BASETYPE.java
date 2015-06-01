@@ -56,7 +56,11 @@ public enum BASETYPE {
 	/**
 	 * Database storing percepts.
 	 */
-	PERCEPTBASE("percept base");
+	PERCEPTBASE("percept base"),
+	/**
+	 * Database storing emotions
+	 */
+	EMOTIONBASE("emotion base");
 
 	/**
 	 * The proper string-representation of this {@link BASETYPE}.
