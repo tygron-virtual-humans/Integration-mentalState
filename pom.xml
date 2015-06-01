@@ -9,7 +9,7 @@
   <packaging>pom</packaging>
 
   <name>The GOAL Mental State</name>
-  <url>https://github.com/tygron-virtual-humans/mentalState/tree/master</url>
+  <url>https://github.com/tygron-virtual-humans/mentalState</url>
   <description>A set of tools that support an interface to various knowledge representation (KR) technologies. The interface provides support for: (i) processing (e.g., parsing) a KR language, (ii) storage in a related KR database, (iii) actions for querying, and updating a KR database.</description>
   
   <licenses>
