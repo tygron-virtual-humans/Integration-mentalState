@@ -13,7 +13,7 @@
   <packaging>pom</packaging>
 
   <name>Mental State KR Support Implementations</name>
-  <url>https://github.com/goalhub/mentalState/tree/master/mentalStateImpl</url>
+  <url>https://github.com/tygron-virtual-humans/mentalState/tree/master/mentalStateImpl</url>
   <description>Knowledge representation technologies that support the mental state.</description>
 
   <licenses>
@@ -33,19 +33,19 @@
   </developers>
   
   <organization>
-  	<name>goalhub</name>
-  	<url>https://github.com/goalhub</url>
+  	<name>tygron-virtual-humans</name>
+  	<url>https://github.com/tygron-virtual-humans</url>
   </organization>
 
   <issueManagement>
-  	<url>https://github.com/goalhub/krTools/issues</url>
+  	<url>https://github.com/tygron-virtual-humans/krTools/issues</url>
   	<system>Github Issues</system>
   </issueManagement>
   
   <scm>
-  	<connection>scm:git:git@github.com:goalhub/mentalState.git</connection>
-  	<developerConnection>scm:git:git@github.com:goalhub/mentalState.git</developerConnection>
-  	<url>https://github.com:goalhub/mentalState</url>
+  	<connection>scm:git:git@github.com:tygron-virtual-humans/mentalState.git</connection>
+  	<developerConnection>scm:git:git@github.com:tygron-virtual-humans/mentalState.git</developerConnection>
+  	<url>https://github.com:tygron-virtual-humans/mentalState</url>
   </scm>
   
   <properties>
