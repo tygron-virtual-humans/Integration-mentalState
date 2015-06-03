@@ -196,7 +196,7 @@
 					<!-- git commit message -->
 					<message>Maven artifacts for ${project.name} version ${project.version}</message>
 					<!-- matches distribution management repository url above -->
-					<outputDirectory>${project.build.directory}/integration-mvn-repo</outputDirectory>
+					<outputDirectory>${project.build.directory}/Integration-mvn-repo</outputDirectory>
 					<!-- remote branch name -->
 					<branch>refs/heads/master</branch>
 					<merge>true</merge>
