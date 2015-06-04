@@ -124,6 +124,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.10.1</version>
+				<configuration>
+					<failOnError>false</failOnError>	
+				</configuration>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
@@ -180,7 +183,7 @@
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>2.8.2</version>
 				<configuration>
-					<altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
+					<altDeploymentRepository>internal.repo::default::file://${project.build.directory}/Integration-mvn-repo</altDeploymentRepository>
 				</configuration>
 			</plugin>
 
@@ -193,7 +196,7 @@
 					<!-- git commit message -->
 					<message>Maven artifacts for ${project.name} version ${project.version}</message>
 					<!-- matches distribution management repository url above -->
-					<outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
+					<outputDirectory>${project.build.directory}/Integration-mvn-repo</outputDirectory>
 					<!-- remote branch name -->
 					<branch>refs/heads/master</branch>
 					<merge>true</merge>
@@ -201,7 +204,7 @@
 						<include>**/*</include>
 					</includes>
 					<!-- github repo name -->
-					<repositoryName>mvn-repo</repositoryName>
+					<repositoryName>Integration-mvn-repo</repositoryName>
 					<!-- github organization -->
 					<repositoryOwner>tygron-virtual-humans</repositoryOwner>
 				</configuration>
