@@ -48,6 +48,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 		this.owner = name;
 		this.type = databaseType;
 		this.state = state;
+		System.out.println("PRINTING LDJL:SJDFLSJDFLJSDLFJLS:DJF:LJSDFLJ " + this.type);
 
 		if (!this.type.equals(BASETYPE.KNOWLEDGEBASE)) {
 			// Create SWI Prolog module that will act as our database.
@@ -81,6 +82,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 
 		// Create an anonymous variable.
 		Variable anonymousVar = new Variable("_");
+		// Variable anonymousVarE = new Variable("_");
 
 		switch (this.type) {
 		case KNOWLEDGEBASE:
@@ -137,6 +139,29 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			// exists.
 			importMailsInBB();
 			break;
+		case EMOTIONBASE:
+			// emotions
+			Term emotion = JPLUtils.createCompound("percept", anonymousVar);
+			Term db_emotion = JPLUtils.createCompound(":", getJPLName(),
+					emotion);
+			Term export_emotion = JPLUtils.createCompound("export", db_emotion);
+			Term emotion2 = JPLUtils.createCompound("percept", anonymousVar,
+					anonymousVar);
+			Term db_emotion2 = JPLUtils.createCompound(":", getJPLName(),
+					emotion2);
+			Term export_emotion2 = JPLUtils.createCompound("export",
+					db_emotion2);
+
+			rawquery(JPLUtils.createCompound("dynamic", db_emotion));
+			rawquery(JPLUtils.createCompound(":", getJPLName(), export_emotion));
+			rawquery(JPLUtils.createCompound("dynamic", db_emotion2));
+			rawquery(JPLUtils
+					.createCompound(":", getJPLName(), export_emotion2));
+						
+			// Ignore initial content; emotion base is empty initially.
+			// Import emotion predicate into belief base, if it exists.
+			importEmotionsIntoBB();
+			break;
 		case PERCEPTBASE:
 			Term percept = JPLUtils.createCompound("percept", anonymousVar);
 			Term db_percept = JPLUtils.createCompound(":", getJPLName(),
@@ -154,6 +179,8 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			rawquery(JPLUtils.createCompound("dynamic", db_percept2));
 			rawquery(JPLUtils
 					.createCompound(":", getJPLName(), export_percept2));
+			
+			
 			// Ignore initial content; percept base is empty initially.
 			// Import percept predicate into belief base, if it exists.
 			importPerceptsIntoBB();
@@ -242,6 +269,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 		Term import_percept = JPLUtils.createCompound("import", pb_percept);
 		Term bb_import_percept = JPLUtils.createCompound(":",
 				beliefbase.getJPLName(), import_percept);
+		//
 
 		Term percept1 = JPLUtils.createCompound("percept", anonymousVar);
 		Term pb_percept1 = JPLUtils.createCompound(":",
@@ -249,7 +277,70 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 		Term import_percept1 = JPLUtils.createCompound("import", pb_percept1);
 		Term bb_import_percept1 = JPLUtils.createCompound(":",
 				beliefbase.getJPLName(), import_percept1);
+		
+		//
 
+		rawquery(JPLUtils.createCompound(",", new Atom("true"),
+				bb_import_percept));
+		rawquery(JPLUtils.createCompound(",", new Atom("true"),
+				bb_import_percept1));
+
+	}
+	
+	/**
+	 * DOC
+	 *
+	 * @throws KRInitFailedException
+	 * @throws KRQueryFailedException
+	 */
+	private void importEmotionsIntoBB() throws KRInitFailedException,
+			KRQueryFailedException {
+		SWIPrologDatabase beliefbase, emotionbase;
+		switch (this.type) {
+		case BELIEFBASE:
+			beliefbase = this;
+			emotionbase = this.state.getDatabase(this.owner, 
+					BASETYPE.EMOTIONBASE);
+			
+			// If emotion base does not yet exist, then nothing to do; return.
+			if (emotionbase == null) {
+				return;
+			}
+			break;
+		case EMOTIONBASE:
+			emotionbase = this;
+			beliefbase = this.state
+					.getDatabase(this.owner, BASETYPE.BELIEFBASE);
+			// If belief base does not yet exist, then nothing to do; return.
+			if (beliefbase == null) {
+				return;
+			}
+			break;
+		default:
+			throw new UnsupportedOperationException(
+					"can not import percepts from " + this.type);
+		}
+
+		// emotion
+		Variable anonymousVar = new Variable("_");
+
+		Term percept = JPLUtils.createCompound("percept", anonymousVar,
+				anonymousVar);
+		Term pb_percept = JPLUtils.createCompound(":",
+				emotionbase.getJPLName(), percept);
+		Term import_percept = JPLUtils.createCompound("import", pb_percept);
+		Term bb_import_percept = JPLUtils.createCompound(":",
+				beliefbase.getJPLName(), import_percept);
+			
+		// emotion
+		Term percept1 = JPLUtils.createCompound("percept", anonymousVar);
+		Term pb_percept1 = JPLUtils.createCompound(":",
+				emotionbase.getJPLName(), percept1);
+		Term import_percept1 = JPLUtils.createCompound("import", pb_percept1);
+		Term bb_import_percept1 = JPLUtils.createCompound(":",
+				beliefbase.getJPLName(), import_percept1);
+		
+		// emotion
 		rawquery(JPLUtils.createCompound(",", new Atom("true"),
 				bb_import_percept));
 		rawquery(JPLUtils.createCompound(",", new Atom("true"),
