@@ -59,6 +59,7 @@ import languageTools.program.agent.msg.Message;
 import languageTools.program.agent.rules.Rule;
 import mentalState.BASETYPE;
 import mentalState.DependencyGraph;
+import mentalState.Emotion2;
 import mentalState.MentalState;
 import swiprolog.SWIPrologInterface;
 import swiprolog.database.SWIPrologDatabase;
@@ -909,5 +910,15 @@ public class SwiPrologMentalState implements MentalState {
 	@Override
 	public DependencyGraph<?> createDependencyGraph() {
 		return new SwiDependencyGraph();
+	}
+
+	@Override
+	public DatabaseFormula delete(Database database, Emotion2 percept)
+			throws KRDatabaseException {
+		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
+		jpl.Term db_percept = JPLUtils.createCompound("emotion",
+				emotionToTerm(percept));
+		swidb.delete(db_percept);
+		return new PrologDBFormula(db_percept, null);
 	}
 }
