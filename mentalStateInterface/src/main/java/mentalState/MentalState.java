@@ -36,7 +36,6 @@ import languageTools.program.agent.msg.Message;
 import eis.iilang.Action;
 import eis.iilang.Parameter;
 import eis.iilang.Percept;
-import emotion_p.Emotion2;
 
 /**
  * The knowledge representation (KR) interface with GOAL specific extra
@@ -230,5 +229,8 @@ public interface MentalState {
 	 * @return An empty dependency graph.
 	 */
 	DependencyGraph<?> createDependencyGraph();
+
+	DatabaseFormula insert(Database emotionbase, Emotion2 percept)
+			throws KRDatabaseException;
 
 }

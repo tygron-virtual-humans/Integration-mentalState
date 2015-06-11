@@ -285,6 +285,8 @@ public class SwiPrologMentalState implements MentalState {
 			this.reserved.add("/(percept,1)");
 			this.reserved.add("/(received,2)");
 			this.reserved.add("/(sent,2)");
+			this.reserved.add("/(emotion, 2)");
+			this.reserved.add("/(emotion, 1)");
 			// dynDecl.removeAll(reserved);
 
 			// ************ compute predicates for belief base **************/
@@ -916,9 +918,81 @@ public class SwiPrologMentalState implements MentalState {
 	public DatabaseFormula delete(Database database, Emotion2 percept)
 			throws KRDatabaseException {
 		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
+		
+		
+		//
+		List<jpl.Term> terms = null;
+		String name = percept.getName();
+		List<Parameter> parameters = percept.getParameters();
+		// Construct a JPL term from the percept operator and parameters.
+		jpl.Term term;
+		if (parameters.size() == 0) {
+			term = new jpl.Atom(name);
+		} else {
+			terms = new ArrayList<>(parameters.size());
+			for (Parameter parameter : parameters) {
+				PrologTerm add = (PrologTerm) convert(parameter);
+				terms.add(add.getTerm());
+			}
+			//term = new Compound(name, terms.toArray(new jpl.Term[0]));
+		}
+		
+		
+		//
+		
+		
 		jpl.Term db_percept = JPLUtils.createCompound("emotion",
-				emotionToTerm(percept));
+				terms.toArray(new jpl.Term[0]));
 		swidb.delete(db_percept);
+		return new PrologDBFormula(db_percept, null);
+	}
+	
+	private jpl.Term emotionToTerm(Emotion2 percept) {
+		// Get main operator name and parameters of the percept.
+		String name = percept.getName();
+		List<Parameter> parameters = percept.getParameters();
+		// Construct a JPL term from the percept operator and parameters.
+		jpl.Term term;
+		if (parameters.size() == 0) {
+			term = new jpl.Atom(name);
+		} else {
+			List<jpl.Term> terms = new ArrayList<>(parameters.size());
+			for (Parameter parameter : parameters) {
+				PrologTerm add = (PrologTerm) convert(parameter);
+				terms.add(add.getTerm());
+			}
+			term = new Compound(name, terms.toArray(new jpl.Term[0]));
+		}
+		return term;
+	}
+
+	@Override
+	public DatabaseFormula insert(Database database, Emotion2 percept)
+			throws KRDatabaseException {
+		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
+		
+		//
+		List<jpl.Term> terms = null;
+		String name = percept.getName();
+		List<Parameter> parameters = percept.getParameters();
+		// Construct a JPL term from the percept operator and parameters.
+		jpl.Term term;
+		if (parameters.size() == 0) {
+			term = new jpl.Atom(name);
+		} else {
+			terms = new ArrayList<>(parameters.size());
+			for (Parameter parameter : parameters) {
+				PrologTerm add = (PrologTerm) convert(parameter);
+				terms.add(add.getTerm());
+			}
+			//term = new Compound(name, terms.toArray(new jpl.Term[0]));
+		}
+		
+		
+		//
+		jpl.Term db_percept = JPLUtils.createCompound("emotion",
+				terms.toArray(new jpl.Term[0]));
+		swidb.insert(db_percept);
 		return new PrologDBFormula(db_percept, null);
 	}
 }

@@ -100,6 +100,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			// Import percept predicate into belief base, if percept base
 			// exists.
 			importPerceptsIntoBB();
+			importEmotionsIntoBB();
 			// Import received and sent predicates into belief base, if mailbox
 			// exists.
 			importMailsInBB();
@@ -141,11 +142,11 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			break;
 		case EMOTIONBASE:
 			// emotions
-			Term emotion = JPLUtils.createCompound("percept", anonymousVar);
+			Term emotion = JPLUtils.createCompound("emotion", anonymousVar);
 			Term db_emotion = JPLUtils.createCompound(":", getJPLName(),
 					emotion);
 			Term export_emotion = JPLUtils.createCompound("export", db_emotion);
-			Term emotion2 = JPLUtils.createCompound("percept", anonymousVar,
+			Term emotion2 = JPLUtils.createCompound("emotion", anonymousVar,
 					anonymousVar);
 			Term db_emotion2 = JPLUtils.createCompound(":", getJPLName(),
 					emotion2);
@@ -324,7 +325,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 		// emotion
 		Variable anonymousVar = new Variable("_");
 
-		Term percept = JPLUtils.createCompound("percept", anonymousVar,
+		Term percept = JPLUtils.createCompound("emotion", anonymousVar,
 				anonymousVar);
 		Term pb_percept = JPLUtils.createCompound(":",
 				emotionbase.getJPLName(), percept);
@@ -333,7 +334,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 				beliefbase.getJPLName(), import_percept);
 			
 		// emotion
-		Term percept1 = JPLUtils.createCompound("percept", anonymousVar);
+		Term percept1 = JPLUtils.createCompound("emotion", anonymousVar);
 		Term pb_percept1 = JPLUtils.createCompound(":",
 				emotionbase.getJPLName(), percept1);
 		Term import_percept1 = JPLUtils.createCompound("import", pb_percept1);
