@@ -146,18 +146,20 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			Term db_emotion = JPLUtils.createCompound(":", getJPLName(),
 					emotion);
 			Term export_emotion = JPLUtils.createCompound("export", db_emotion);
+			/*
 			Term emotion2 = JPLUtils.createCompound("emotion", anonymousVar,
 					anonymousVar);
 			Term db_emotion2 = JPLUtils.createCompound(":", getJPLName(),
 					emotion2);
 			Term export_emotion2 = JPLUtils.createCompound("export",
 					db_emotion2);
+					*/
 
 			rawquery(JPLUtils.createCompound("dynamic", db_emotion));
 			rawquery(JPLUtils.createCompound(":", getJPLName(), export_emotion));
-			rawquery(JPLUtils.createCompound("dynamic", db_emotion2));
-			rawquery(JPLUtils
-					.createCompound(":", getJPLName(), export_emotion2));
+	//		rawquery(JPLUtils.createCompound("dynamic", db_emotion2));
+	//		rawquery(JPLUtils
+	//				.createCompound(":", getJPLName(), export_emotion2));
 						
 			// Ignore initial content; emotion base is empty initially.
 			// Import emotion predicate into belief base, if it exists.
@@ -324,15 +326,16 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 
 		// emotion
 		Variable anonymousVar = new Variable("_");
-
+/*
 		Term percept = JPLUtils.createCompound("emotion", anonymousVar,
 				anonymousVar);
 		Term pb_percept = JPLUtils.createCompound(":",
 				emotionbase.getJPLName(), percept);
+				
 		Term import_percept = JPLUtils.createCompound("import", pb_percept);
 		Term bb_import_percept = JPLUtils.createCompound(":",
 				beliefbase.getJPLName(), import_percept);
-			
+			*/
 		// emotion
 		Term percept1 = JPLUtils.createCompound("emotion", anonymousVar);
 		Term pb_percept1 = JPLUtils.createCompound(":",
@@ -342,8 +345,8 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 				beliefbase.getJPLName(), import_percept1);
 		
 		// emotion
-		rawquery(JPLUtils.createCompound(",", new Atom("true"),
-				bb_import_percept));
+	//	rawquery(JPLUtils.createCompound(",", new Atom("true"),
+	//			bb_import_percept));
 		rawquery(JPLUtils.createCompound(",", new Atom("true"),
 				bb_import_percept1));
 	}

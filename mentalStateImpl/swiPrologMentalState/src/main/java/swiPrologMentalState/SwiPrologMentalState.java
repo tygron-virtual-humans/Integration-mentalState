@@ -919,7 +919,7 @@ public class SwiPrologMentalState implements MentalState {
 			throws KRDatabaseException {
 		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
 		
-		
+		/*
 		//
 		List<jpl.Term> terms = null;
 		String name = percept.getName();
@@ -939,10 +939,11 @@ public class SwiPrologMentalState implements MentalState {
 		
 		
 		//
+		*/
 		
-		
-		jpl.Term db_percept = JPLUtils.createCompound("emotion",
-				terms.toArray(new jpl.Term[0]));
+	//	jpl.Term db_percept = JPLUtils.createCompound("emotion",
+	//			terms.toArray(new jpl.Term[0]));
+		jpl.Term db_percept = emotionToTerm(percept);
 		swidb.delete(db_percept);
 		return new PrologDBFormula(db_percept, null);
 	}
@@ -970,7 +971,7 @@ public class SwiPrologMentalState implements MentalState {
 	public DatabaseFormula insert(Database database, Emotion2 percept)
 			throws KRDatabaseException {
 		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
-		
+		/*
 		//
 		List<jpl.Term> terms = null;
 		String name = percept.getName();
@@ -990,8 +991,10 @@ public class SwiPrologMentalState implements MentalState {
 		
 		
 		//
-		jpl.Term db_percept = JPLUtils.createCompound("emotion",
-				terms.toArray(new jpl.Term[0]));
+		 */
+	//	jpl.Term db_percept = JPLUtils.createCompound("emotion",
+	//			terms.toArray(new jpl.Term[0]));
+		jpl.Term db_percept = emotionToTerm(percept);
 		swidb.insert(db_percept);
 		return new PrologDBFormula(db_percept, null);
 	}
