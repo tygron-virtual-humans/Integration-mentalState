@@ -50,7 +50,7 @@
 	</properties>
 
 	<repositories>
-			<repository>
+		<repository>
 			<id>Integration-mvn-repo</id>
 			<url>https://raw.github.com/tygron-virtual-humans/Integration-mvn-repo/master</url>
 		</repository>

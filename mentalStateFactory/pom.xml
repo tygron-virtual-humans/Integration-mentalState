@@ -6,7 +6,7 @@
 
 	<groupId>com.github.goalhub.mentalstate</groupId>
 	<artifactId>mentalstatefactory</artifactId>
-	<version>1.1.7-SNAPSHOT</version>
+	<version>1.1.8-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Mental State Factory</name>
@@ -71,7 +71,7 @@
 		<dependency>
 			<groupId>com.github.goalhub.mentalstate.mentalstateimpl</groupId>
 			<artifactId>swiprologmentalstate</artifactId>
-			<version>1.3.7-SNAPSHOT</version>
+			<version>1.3.8-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
@@ -87,6 +87,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>2.9</version>
+				<configuration>
+                 	<altDeploymentRepository>internal.repo::default::file://${project.build.directory}/Integration-mvn-repo</altDeploymentRepository>
+                </configuration>
 				<executions>
 					<execution>
 						<id>analyze</id>
@@ -116,6 +119,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.10.1</version>
+				<configuration>
+					<failOnError>false</failOnError>	
+ 				</configuration>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
@@ -172,7 +178,7 @@
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>2.8.2</version>
 				<configuration>
-					<altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
+					<altDeploymentRepository>internal.repo::default::file://${project.build.directory}/Integration-mvn-repo</altDeploymentRepository>
 				</configuration>
 			</plugin>
 
@@ -185,7 +191,7 @@
 					<!-- git commit message -->
 					<message>Maven artifacts for ${project.name} version ${project.version}</message>
 					<!-- matches distribution management repository url above -->
-					<outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
+					<outputDirectory>${project.build.directory}/Integration-mvn-repo</outputDirectory>
 					<!-- remote branch name -->
 					<branch>refs/heads/master</branch>
 					<merge>true</merge>
@@ -193,7 +199,7 @@
 						<include>**/*</include>
 					</includes>
 					<!-- github repo name -->
-					<repositoryName>mvn-repo</repositoryName>
+					<repositoryName>Integration-mvn-repo</repositoryName>
 					<!-- github organization -->
 					<repositoryOwner>tygron-virtual-humans</repositoryOwner>
 				</configuration>
