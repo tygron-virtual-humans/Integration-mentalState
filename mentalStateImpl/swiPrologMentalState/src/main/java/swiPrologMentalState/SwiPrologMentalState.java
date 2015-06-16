@@ -918,31 +918,9 @@ public class SwiPrologMentalState implements MentalState {
 	public DatabaseFormula delete(Database database, Emotion2 percept)
 			throws KRDatabaseException {
 		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
-		
-		/*
-		//
-		List<jpl.Term> terms = null;
-		String name = percept.getName();
-		List<Parameter> parameters = percept.getParameters();
-		// Construct a JPL term from the percept operator and parameters.
-		jpl.Term term;
-		if (parameters.size() == 0) {
-			term = new jpl.Atom(name);
-		} else {
-			terms = new ArrayList<>(parameters.size());
-			for (Parameter parameter : parameters) {
-				PrologTerm add = (PrologTerm) convert(parameter);
-				terms.add(add.getTerm());
-			}
-			//term = new Compound(name, terms.toArray(new jpl.Term[0]));
-		}
-		
-		
-		//
-		*/
-		
-	//	jpl.Term db_percept = JPLUtils.createCompound("emotion",
-	//			terms.toArray(new jpl.Term[0]));
+	
+		// jpl.Term db_percept = JPLUtils.createCompound("emotion",
+		// emotionToTerm(percept));
 		jpl.Term db_percept = emotionToTerm(percept);
 		swidb.delete(db_percept);
 		return new PrologDBFormula(db_percept, null);
@@ -971,29 +949,9 @@ public class SwiPrologMentalState implements MentalState {
 	public DatabaseFormula insert(Database database, Emotion2 percept)
 			throws KRDatabaseException {
 		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
-		/*
-		//
-		List<jpl.Term> terms = null;
-		String name = percept.getName();
-		List<Parameter> parameters = percept.getParameters();
-		// Construct a JPL term from the percept operator and parameters.
-		jpl.Term term;
-		if (parameters.size() == 0) {
-			term = new jpl.Atom(name);
-		} else {
-			terms = new ArrayList<>(parameters.size());
-			for (Parameter parameter : parameters) {
-				PrologTerm add = (PrologTerm) convert(parameter);
-				terms.add(add.getTerm());
-			}
-			//term = new Compound(name, terms.toArray(new jpl.Term[0]));
-		}
-		
-		
-		//
-		 */
-	//	jpl.Term db_percept = JPLUtils.createCompound("emotion",
-	//			terms.toArray(new jpl.Term[0]));
+
+		//jpl.Term db_percept = JPLUtils.createCompound("emotion",
+		//		emotionToTerm(percept));	
 		jpl.Term db_percept = emotionToTerm(percept);
 		swidb.insert(db_percept);
 		return new PrologDBFormula(db_percept, null);

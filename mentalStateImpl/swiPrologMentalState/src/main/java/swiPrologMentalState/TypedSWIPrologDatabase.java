@@ -48,7 +48,6 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 		this.owner = name;
 		this.type = databaseType;
 		this.state = state;
-		System.out.println("PRINTING LDJL:SJDFLSJDFLJSDLFJLS:DJF:LJSDFLJ " + this.type);
 
 		if (!this.type.equals(BASETYPE.KNOWLEDGEBASE)) {
 			// Create SWI Prolog module that will act as our database.
