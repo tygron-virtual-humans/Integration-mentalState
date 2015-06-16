@@ -919,9 +919,9 @@ public class SwiPrologMentalState implements MentalState {
 			throws KRDatabaseException {
 		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
 	
-		// jpl.Term db_percept = JPLUtils.createCompound("emotion",
-		// emotionToTerm(percept));
-		jpl.Term db_percept = emotionToTerm(percept);
+		jpl.Term db_percept = JPLUtils.createCompound("emotion",
+				emotionToTerm(percept));
+		// jpl.Term db_percept = emotionToTerm(percept);
 		swidb.delete(db_percept);
 		return new PrologDBFormula(db_percept, null);
 	}
@@ -950,9 +950,9 @@ public class SwiPrologMentalState implements MentalState {
 			throws KRDatabaseException {
 		TypedSWIPrologDatabase swidb = (TypedSWIPrologDatabase) database;
 
-		//jpl.Term db_percept = JPLUtils.createCompound("emotion",
-		//		emotionToTerm(percept));	
-		jpl.Term db_percept = emotionToTerm(percept);
+		jpl.Term db_percept = JPLUtils.createCompound("emotion",
+				emotionToTerm(percept));	
+		// jpl.Term db_percept = emotionToTerm(percept);
 		swidb.insert(db_percept);
 		return new PrologDBFormula(db_percept, null);
 	}
