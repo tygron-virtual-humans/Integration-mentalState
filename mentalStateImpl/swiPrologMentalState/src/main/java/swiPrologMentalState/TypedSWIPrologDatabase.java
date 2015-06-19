@@ -141,7 +141,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 			break;
 		case EMOTIONBASE:
 			// emotions
-			Term emotion = JPLUtils.createCompound("emotion", anonymousVar);
+			Term emotion = JPLUtils.createCompound("emo", anonymousVar);
 			Term db_emotion = JPLUtils.createCompound(":", getJPLName(),
 					emotion);
 			Term export_emotion = JPLUtils.createCompound("export", db_emotion);
@@ -336,7 +336,7 @@ public class TypedSWIPrologDatabase extends SWIPrologDatabase {
 				beliefbase.getJPLName(), import_percept);
 			*/
 		// emotion
-		Term percept1 = JPLUtils.createCompound("emotion", anonymousVar);
+		Term percept1 = JPLUtils.createCompound("emo", anonymousVar);
 		Term pb_percept1 = JPLUtils.createCompound(":",
 				emotionbase.getJPLName(), percept1);
 		Term import_percept1 = JPLUtils.createCompound("import", pb_percept1);
